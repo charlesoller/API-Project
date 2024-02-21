@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all Spots
 router.get("/", async(req, res) => {
     const spots = await Spot.findAll({
-        attributes: []
+        attributes: { exclude: [ 'numReviews' ]}
     });
 
     return res.json(spots)
