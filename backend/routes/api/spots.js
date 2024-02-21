@@ -96,7 +96,8 @@ router.get("/:id", async(req, res) => {
 })
 
 router.get("/", async(req, res) => {
-    const {}
+    const { address, city, state, country, lat, lng, name, description, price } = req.body
+    const user = await Spot.create({ email, username, firstName, lastName, hashedPassword });
 })
 
 module.exports = router;
