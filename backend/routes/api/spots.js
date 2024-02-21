@@ -21,13 +21,7 @@ router.get("/", async(req, res) => {
             required: true,
             attributes: []
         },
-        // attributes: { exclude: [ 'numReviews' ]},
     });
-
-    // const res = {...spots}
-    // delete
-    // console.log(spots)
-
 
     return res.json(spots)
 })
