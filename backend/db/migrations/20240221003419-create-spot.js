@@ -40,6 +40,12 @@ module.exports = {
       price: {
         type: Sequelize.FLOAT
       },
+      numReviews: {
+        type: Sequelize.INTEGER
+      },
+      avgRating: {
+        type: Sequelize.FLOAT
+      },
       createdAt: {
         type: Sequelize.DATE
       },
