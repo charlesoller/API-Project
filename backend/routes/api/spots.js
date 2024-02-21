@@ -95,9 +95,39 @@ router.get("/:id", async(req, res) => {
     return res.json(spot)
 })
 
-router.get("/", async(req, res) => {
+// Create a Spot
+router.post("/", async(req, res) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
-    const user = await Spot.create({ email, username, firstName, lastName, hashedPassword });
+    const id = req.user?.id
+    if(!id){
+        return res.status(400).json({message: "Must be logged in to create a Spot."})
+    }
+
+    try {
+        const spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
+        return res.json(spot)
+    } catch(e) {
+        const err = { message: "Bad Request" }
+        const errors = {}
+        e.errors.forEach(error => {
+            const errItem = error.path
+            switch (errItem) {
+                case 'address': errors.address = "Street address is required"; break;
+                case 'city': errors.city = "City is required"; break;
+                case 'state': errors.state = "State is required"; break;
+                case 'country': errors.country = "Country is required"; break;
+                case 'lat': errors.lat = "Latitude must be within -180 and 180"; break;
+                case 'lng': errors.lng = "Longitude must be within -180 and 180"; break;
+                case 'name': errors.name = "Name must be less than 50 characters"; break;
+                case 'description': errors.description = "Description is required"; break;
+                case 'price': errors.price = "Price per day must be a positive number"; break;
+                default: errors.default = "No error found. Please try again."; break;
+            }
+        })
+
+        err.errors = errors
+        return res.status(400).json(err)
+    }
 })
 
 module.exports = router;
