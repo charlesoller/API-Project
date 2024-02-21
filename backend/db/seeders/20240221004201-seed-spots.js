@@ -43,7 +43,7 @@ module.exports = {
         address: "456 Modest Way",
         city: "Normal",
         state: "Nebraska",
-        state: "United States",
+        country: "United States",
         lat: 23.45,
         lng: 67.43,
         name: "Average Home",
