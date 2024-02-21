@@ -1,7 +1,6 @@
 'use strict';
 
 const { Spot } = require('../models');
-const bcrypt = require("bcryptjs");
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
@@ -10,36 +9,48 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await User.bulkCreate([
+    await Spot.bulkCreate([
       {
-        email: 'demo@user.io',
-        firstName: "Demo",
-        lastName: "Lition",
-        username: 'Demo-lition',
-        hashedPassword: bcrypt.hashSync('password')
+        ownerId: 1,
+        address: "123 Candy Lane",
+        city: "Candy Land",
+        state: "Candy World",
+        lat: 40.44,
+        lng: 32.45,
+        name: "Candy Castle",
+        description: "The Sweetest Place on Earth",
+        price: 401.89
       },
       {
-        email: 'user1@user.io',
-        firstName: "User",
-        lastName: "One",
-        username: 'FakeUser1',
-        hashedPassword: bcrypt.hashSync('password2')
+        ownerId: 3,
+        address: "555 Scary Lane",
+        city: "Transylvania",
+        state: "Oklahoma",
+        lat: 33.33,
+        lng: 33.33,
+        name: "Haunted House",
+        description: "The Most Haunted Place on Earth",
+        price: 10.00
       },
       {
-        email: 'user2@user.io',
-        firstName: "User",
-        lastName: "Two",
-        username: 'FakeUser2',
-        hashedPassword: bcrypt.hashSync('password3')
-      }
+        ownerId: 2,
+        address: "456 Modest Way",
+        city: "Normal",
+        state: "Nebraska",
+        lat: 23.45,
+        lng: 67.43,
+        name: "Average Home",
+        description: "The Most Average Place on Earth",
+        price: 100.50
+      },
     ], { validate: true });
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Users';
+    options.tableName = 'Spots';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
-      username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2'] }
+      name: { [Op.in]: ['Candy Castle', 'Haunted House', 'Average Home'] }
     }, {});
   }
 };
