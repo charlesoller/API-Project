@@ -140,6 +140,7 @@ router.post("/", async(req, res) => {
     }
 })
 
+// Add Image to a Spot
 router.post("/:id/images", async(req, res) => {
     const { url, preview } = req.body
     const { id } = req.params
@@ -166,6 +167,7 @@ router.post("/:id/images", async(req, res) => {
                                                 PUT ROUTES
 ============================================================================================================== */
 
+// Update a spot
 router.put("/:id", async(req, res) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
     const { id } = req.params
@@ -230,6 +232,7 @@ router.put("/:id", async(req, res) => {
                                                DELETE ROUTES
 ============================================================================================================== */
 
+// Delete a Spot
 router.delete("/:id", async (req, res) => {
     const { id } = req.params
     const userId = req.user?.id
