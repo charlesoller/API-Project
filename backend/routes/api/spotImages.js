@@ -24,14 +24,19 @@ router.delete("/:spotImageId", async(req, res) => {
     const { spotImageId } = req.params
     const userId = req.user?.id
     const spotImage = await SpotImage.findByPk(spotImageId)
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(userId !== spot.ownerId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
+
     if(!spotImage){
         return res.status(404).json({ message: "Spot Image couldn't be found" })
     }
     const spot = await Spot.findByPk(spotImage.spotId)
 
-    if(!userId || userId !== spot.ownerId){
-        return res.status(404).json({ message: "You are not authorized to delete this spot image." })
-    }
+
 
     await spotImage.destroy()
     res.json({ message: "Successfully deleted"})

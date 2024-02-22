@@ -21,7 +21,7 @@ router.get("/", async(req, res) => {
 router.get("/current", async(req, res) => {
     const userId = req.user?.id
     if(!userId){
-        return res.status(400).json({message: "Must be logged in see your reviews."})
+        return res.status(401).json({message: "Authentication required"})
     }
 
     const reviews = await Review.findAll({
@@ -66,31 +66,35 @@ router.get("/current", async(req, res) => {
 ============================================================================================================== */
 
 // Add image to a review
-router.post("/:id/images", async(req, res) => {
+router.post("/:reviewId/images", async(req, res) => {
     const userId = req.user?.id
-    const { id } = req.params
+    const { reviewId } = req.params
     const { url } = req.body
 
-    const review = await Review.findByPk(id, {raw: true})
+    const review = await Review.findByPk(reviewId, {raw: true})
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(review.userId !== userId){
+        return res.status(403).json({message: "Forbidden"})
+    }
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found"})
     }
 
     const currReviewImages = await ReviewImage.findAll({
-        where: { reviewId: id },
+        where: { reviewId },
         raw: true
     })
     if(currReviewImages.length >= 10){
         return res.status(403).json({ message: "Maximum number of images for this resource was reached"})
     }
 
-    if(!userId || review.userId !== userId){
-        return res.status(404).json({ message: "You are not authorized to update this review." })
-    }
+
 
     const reviewImage = await ReviewImage.create({
-        reviewId: id,
-        url: url
+        reviewId,
+        url
     })
 
     return res.json({
@@ -109,16 +113,21 @@ router.put("/:id", async(req, res) => {
     const { id } = req.params
     const { review: body, stars } = req.body
 
-    const review = await Review.findByPk(id)
-    const oldRating = review.stars;
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(review.userId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
 
+    const review = await Review.findByPk(id)
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found"})
     }
+    const oldRating = review.stars;
 
-    if(!userId || review.userId !== userId){
-        return res.status(404).json({ message: "You are not authorized to update this review." })
-    }
+
+
 
     try {
         review.set({
@@ -169,14 +178,17 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     const review = await Review.findByPk(id)
-
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(review.userId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found" })
     }
 
-    if(!userId || review.userId !== userId){
-        return res.status(404).json({ message: "You are not authorized to delete this review." })
-    }
+
 
     await review.destroy()
     res.json({ message: "Successfully deleted"})

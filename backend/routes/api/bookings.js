@@ -20,7 +20,7 @@ router.get("/", async(req, res) => {
 router.get("/current", async(req, res) => {
     const userId = req.user?.id
     if(!userId){
-        return res.status(400).json({message: "Must be logged in see your reviews."})
+        return res.status(401).json({message: "Authentication required"})
     }
 
     const bookings = await Booking.findAll({
@@ -55,6 +55,8 @@ router.get("/current", async(req, res) => {
 ============================================================================================================== */
 
 // Update a booking
+// MODIFY::::BOOKING SHOULDN'T CONFLICT WITH ITSELF
+// MODIFY::::SHOULD ERROR WHEN DATES SURROUND A BOOKING
 router.put("/:bookingId", async(req, res) => {
     const { startDate, endDate } = req.body
     const err = {message: "Bad Request"};
@@ -70,15 +72,19 @@ router.put("/:bookingId", async(req, res) => {
     const { bookingId } = req.params
     const userId = req.user?.id
     const booking = await Booking.findByPk(bookingId)
-    if(booking.endDate < Date.now()){
-        return res.status(403).json({ message: "Past bookings can't be modified"})
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(userId !== booking.userId){
+        return res.status(403).json({ message: "Forbidden" })
     }
     if(!booking){
         return res.status(404).json({ message: "Booking couldn't be found" })
     }
-    if(!userId || userId !== booking.userId){
-        return res.status(404).json({ message: "You are not authorized to edit this booking." })
+    if(booking.endDate < Date.now()){
+        return res.status(403).json({ message: "Past bookings can't be modified"})
     }
+
 
     const spot = await Spot.findByPk(booking.spotId, {
         include: {
@@ -130,14 +136,18 @@ router.delete("/:bookingId", async (req, res) => {
     const userId = req.user?.id
     const booking = await Booking.findByPk(bookingId)
 
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required." })
+    }
+    if(booking.userId !== userId && spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
     if(!booking){
         return res.status(404).json({ message: "Booking couldn't be found" })
     }
 
     const spot = await Spot.findByPk(booking.spotId)
-    if(!userId || ( booking.userId !== userId && spot.ownerId !== userId )){
-        return res.status(404).json({ message: "You are not authorized to delete this booking." })
-    }
+
 
     if(booking.startDate < Date.now()){
         return res.status(403).json({ message: "Bookings that have been started can't be deleted" })

@@ -181,8 +181,8 @@ router.get("/current", async(req, res) => {
 
         return res.json({Spots: spots})
     } catch {
-        return res.json({
-            message: "Must be logged in to view current user's spots"
+        return res.status(401).json({
+            message: "Authentication required"
         })
     }
 })
@@ -258,9 +258,8 @@ router.get("/:id/bookings", async(req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     if(!userId){
-        return res.status(400).json({message: "Must be logged in to view bookings."})
+        return res.status(401).json({message: "Authentication required"})
     }
-
     const spot = await Spot.findByPk(id, { raw: true })
     if(!spot){
         return res.status(404).json({message: "Spot couldn't be found"})
@@ -299,7 +298,7 @@ router.post("/", async(req, res) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
     const id = req.user?.id
     if(!id){
-        return res.status(400).json({message: "Must be logged in to create a Spot."})
+        return res.status(401).json({message: "Authentication required"})
     }
 
     try {
@@ -335,13 +334,15 @@ router.post("/:id/images", async(req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     const spot = await Spot.findByPk(id, { raw: true })
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(spot.ownerId !== userId){
+        return res.status(403).json({message: "Forbidden"})
+    }
 
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
-    }
-
-    if(!userId || spot.ownerId !== userId){
-        return res.status(404).json({ message: "You are not authorized to add an image to this spot." })
     }
 
     const spotImage = await SpotImage.create({ spotId: id, url, preview })
@@ -356,7 +357,10 @@ router.post("/:id/images", async(req, res) => {
 router.post("/:id/reviews", async(req, res) => {
     const { review, stars } = req.body
 
-    const userId = req.user.id
+    const userId = req.user?.id
+    if(!userId){
+        return res.status(401).json({message: "Authentication required"})
+    }
     const spotId = req.params.id
 
     const spot = await Spot.findByPk(spotId)
@@ -394,6 +398,7 @@ router.post("/:id/reviews", async(req, res) => {
 })
 
 // Post a booking
+// MODIFY :::: SHOULD ERROR WHEN DATES SURROUND BOOKING
 router.post("/:id/bookings", async(req, res) => {
     const { startDate, endDate } = req.body
     const { id } = req.params
@@ -401,15 +406,19 @@ router.post("/:id/bookings", async(req, res) => {
     const spot = await Spot.findByPk(id, {
         include: {
             model: Booking,
-            where: { spotId: id }
         },
     })
+    if(!userId || spot.ownerId === userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(spot.ownerId === userId){
+        return res.status(403).json({message: "Forbidden"})
+    }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
     }
     const err = {message: "Bad Request"};
     const errors = {};
-
     const bookings = spot.dataValues.Bookings
     for(let i = 0; i < bookings.length; i++){
         const booking = bookings[i].dataValues
@@ -448,10 +457,6 @@ router.post("/:id/bookings", async(req, res) => {
         errors.endDate = "endDate cannot be on or before startDate"
     }
 
-    if(!userId || spot.ownerId === userId){
-        return res.status(404).json({ message: "You are not authorized to create a booking for this spot." })
-    }
-
     const booking = await Booking.create({userId, spotId: id, startDate, endDate})
 
     if(errors.startDate || errors.endDate){
@@ -472,14 +477,17 @@ router.put("/:id", async(req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     const spot = await Spot.findByPk(id)
-
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
     }
 
-    if(!userId || spot.ownerId !== userId){
-        return res.status(404).json({ message: "You are not authorized to update this spot." })
-    }
+
 
     try {
         spot.set({
@@ -536,14 +544,17 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     const spot = await Spot.findByPk(id)
-
+    if(!userId){
+        return res.status(401).json({ message: "Authentication required" })
+    }
+    if(spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
     }
 
-    if(!userId || spot.ownerId !== userId){
-        return res.status(404).json({ message: "You are not authorized to delete this spot." })
-    }
+
 
     await spot.destroy()
     res.json({ message: "Successfully deleted"})
