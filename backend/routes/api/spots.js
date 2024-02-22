@@ -201,21 +201,37 @@ router.post("/:id/reviews", async(req, res) => {
     if(!spot){
         return res.status(404).json({message: "Spot couldn't be found"})
     }
-    const newReview = await Review.create({ spotId, userId, review, stars })
-    const newRating = (spot.avgRating * spot.numReviews + stars) / (spot.numReviews + 1)
 
-    // Updating spot to reflect new review
-    spot.set({
-        numReviews: spot.numReviews + 1,
-        avgRating: Number(newRating.toFixed(2))
-    })
-    await spot.save()
+    try {
+        const newReview = await Review.create({ spotId, userId, review, stars })
+        const newRating = (spot.avgRating * spot.numReviews + stars) / (spot.numReviews + 1)
 
-    console.log(spot)
-    return res.json({
-        review: newReview.review,
-        stars: newReview.stars
-    })
+        // Updating spot to reflect new review
+        spot.set({
+            numReviews: spot.numReviews + 1,
+            avgRating: Number(newRating.toFixed(2))
+        })
+        await spot.save()
+
+        return res.json({
+            review: newReview.review,
+            stars: newReview.stars
+        })
+    } catch (e) {
+        const err = { message: "Bad Request" }
+        const errors = {}
+        e.errors.forEach(error => {
+            const errItem = error.path
+            switch (errItem) {
+                case 'stars': errors.stars = "Stars must be an integer from 1 to 5"; break;
+                case 'review': errors.city = "Review text is required"; break;
+                default: errors.default = "No error found. Please try again."; break;
+            }
+        })
+
+        err.errors = errors
+        return res.status(400).json(err)
+    }
 })
 
 /* ==============================================================================================================
