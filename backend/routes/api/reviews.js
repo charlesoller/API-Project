@@ -104,6 +104,9 @@ router.post("/:id/images", async(req, res) => {
 router.put("/:id", async(req, res) => {
     const userId = req.user?.id
     const { id } = req.params
+    const { review, stars } = req.body
+
+    const review = Review.findByPk(id)
 })
 
 module.exports = router;
