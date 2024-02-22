@@ -51,9 +51,11 @@ router.get("/current", async(req, res) => {
     })
 
     // This is absolutely disgusting but it does work to pull the previewImage url out from the nested object
-    const url = reviews[0].Spot.dataValues.SpotImages[0].dataValues.url
-    delete reviews[0].Spot.dataValues.SpotImages
-    reviews[0].Spot.dataValues.previewImage = url
+    for(let i = 0; i < reviews.length; i++){
+        const url = reviews[i].Spot.dataValues.SpotImages[i].dataValues.url
+        delete reviews[i].Spot.dataValues.SpotImages
+        reviews[i].Spot.dataValues.previewImage = url
+    }
     // ------------------------------------------
 
     return res.json({Reviews: reviews})
