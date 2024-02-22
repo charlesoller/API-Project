@@ -222,13 +222,19 @@ router.post("/:id/reviews", async(req, res) => {
         const errors = {}
         e.errors.forEach(error => {
             const errItem = error.path
+
             switch (errItem) {
                 case 'stars': errors.stars = "Stars must be an integer from 1 to 5"; break;
                 case 'review': errors.city = "Review text is required"; break;
+                case 'userId': errors.userId = "User already has a review for this spot"; break;
+                case 'spotId': errors.spotId = "User already has a review for this spot"; break;
                 default: errors.default = "No error found. Please try again."; break;
             }
         })
 
+        if(errors.userId || errors.spotId){
+            return res.json({message: "User already has a review for this spot"})
+        }
         err.errors = errors
         return res.status(400).json(err)
     }
