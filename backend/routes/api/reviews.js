@@ -59,6 +59,34 @@ router.get("/current", async(req, res) => {
     return res.json({Reviews: reviews})
 })
 
+/* ==============================================================================================================
+                                                POST ROUTES
+============================================================================================================== */
 
+router.post("/:id/images", async(req, res) => {
+    const userId = req.user?.id
+    const { id } = req.params
+    const { url } = req.body
+
+    const review = await Review.findByPk(id)
+    if(!userId || review.userId !== userId){
+        return res.status(404).json({ message: "You are not authorized to update this review." })
+    }
+
+    const reviewImage = await ReviewImage.create({
+        reviewId: id,
+        url: url
+    })
+
+    return res.json({
+        id: reviewImage.id,
+        userId: userId,
+        spotId: id,
+        review: review.review,
+        stars: review.stars,
+        createdAt: reviewImage.createdAt,
+        updatedAt: reviewImage.updatedAt
+    })
+})
 
 module.exports = router;

@@ -213,10 +213,7 @@ router.post("/:id/reviews", async(req, res) => {
         })
         await spot.save()
 
-        return res.json({
-            review: newReview.review,
-            stars: newReview.stars
-        })
+        return res.json(newReview)
     } catch (e) {
         const err = { message: "Bad Request" }
         const errors = {}
