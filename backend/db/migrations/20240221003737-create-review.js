@@ -41,7 +41,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
+    }).t;
     await queryInterface.addIndex('Reviews', ['userId', 'spotId'])
   },
   async down(queryInterface, Sequelize) {
