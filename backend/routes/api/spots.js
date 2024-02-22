@@ -268,6 +268,74 @@ router.post("/:id/reviews", async(req, res) => {
     }
 })
 
+// Post a booking
+router.post("/:id/bookings", async(req, res) => {
+    const { startDate, endDate } = req.body
+    const { id } = req.params
+    const userId = req.user?.id
+    const spot = await Spot.findByPk(id, {
+        include: {
+            model: Booking,
+            where: { spotId: id }
+        },
+    })
+    if(!spot){
+        return res.status(404).json({ message: "Spot couldn't be found" })
+    }
+    const err = {message: "Bad Request"};
+    const errors = {};
+
+    const bookings = spot.dataValues.Bookings
+    for(let i = 0; i < bookings.length; i++){
+        const booking = bookings[i].dataValues
+        const sd = booking.startDate.toISOString().split("T")[0]
+        const ed = booking.endDate.toISOString().split("T")[0]
+        if(
+            sd === startDate
+            || sd === endDate
+            || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
+        ){
+            err.message = "Sorry, this spot is already booked for the specified dates"
+            errors.startDate = "Start date conflicts with an existing booking"
+        }
+        if(
+            ed === endDate
+            || ed === startDate
+            || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
+        ){
+            err.message = "Sorry, this spot is already booked for the specified dates"
+            errors.endDate = "End date conflicts with an existing booking"
+        }
+    }
+
+    if(errors.endDate || errors.startDate){
+        err.errors = errors
+        return res.status(403).json(err)
+    }
+
+
+    if(Date.parse(startDate) < Date.now()){
+        errors.startDate = "startDate cannot be in the past"
+    }
+
+    if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
+        errors.endDate = "endDate cannot be on or before startDate"
+    }
+
+    if(!userId || spot.ownerId === userId){
+        return res.status(404).json({ message: "You are not authorized to create a booking for this spot." })
+    }
+
+    const booking = await Booking.create({userId, spotId: id, startDate, endDate})
+
+    if(errors.startDate || errors.endDate){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+
+    return res.json(booking)
+})
+
 /* ==============================================================================================================
                                                 PUT ROUTES
 ============================================================================================================== */
