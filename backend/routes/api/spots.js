@@ -11,9 +11,122 @@ const spot = require('../../db/models/spot');
 
 // Get all Spots
 router.get("/", async(req, res) => {
+
+    const query = {};
+    const where = {};
+    let { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query
+    const err = {message: "Bad Request"}
+    const errors = {}
+
+    // PARSING QUERY ==============================
+    if(minLat) minLat = parseInt(minLat)
+    if(maxLat) maxLat = parseInt(maxLat)
+    if(minLng) minLng = parseInt(minLng)
+    if(maxLng) maxLng = parseInt(maxLng)
+    if(minPrice) minPrice = parseInt(minPrice)
+    if(maxPrice) maxPrice = parseInt(maxPrice)
+
+    // ============================================
+    // PAGINATION =================================
+    let page = req.query.page === undefined ? 1 : parseInt(req.query.page);
+    let size = req.query.size === undefined ? 20 : parseInt(req.query.size);
+    if(typeof page !== "number" || page < 1) {
+        errors.page = "Page must be greater than or equal to 1"
+    }
+    if(typeof size !== "number" || size < 1) {
+        errors.size = "Size must be greater than or equal to 1"
+    }
+
+    query.limit = size;
+    query.offset = size * (page - 1);
+    // ============================================
+    // BUILDING WHERE ==============================
+    // CHECK LAT -----------------------------------
+    if(maxLat && maxLat >= -90 && maxLat <= 90){
+        where.maxLat = maxLat
+    } else if (maxLat){
+        errors.maxLat = "Maxiumum latitude is invalid"
+    }
+    if(minLat && minLat >= -90 && minLat <= 90){
+        where.minLat = minLat
+    } else if (minLat){
+        errors.minLat = "Minimum latitude is invalid"
+    }
+    // CHECK LNG -----------------------------------
+    if(maxLng && maxLng >= -180 && maxLng <= 180){
+        where.maxLng = maxLng
+    } else if (maxLng) {
+        errors.maxLng = "Maxiumum longitude is invalid"
+    }
+    if(minLng && minLng >= -180 && minLng <= 180){
+        where.minLng = minLng
+    } else if (minLng) {
+        errors.minLng = "Minimum longitude is invalid"
+    }
+    // CHECK PRICE -----------------------------------
+    if(minPrice && minPrice >= 0){
+        where.minPrice = minPrice
+    } else if (minPrice){
+        errors.minPrice = "Minimum price must be greater than or equal to 0"
+    }
+    if(maxPrice && maxPrice >= 0){
+        where.maxPrice = maxPrice
+    } else if(maxPrice) {
+        errors.maxPrice = "Maximum price must be greater than or equal to 0"
+    }
+    //===================================================
+    // BUILDING FILTER ==================================
+    const filter = {}
+    // Setting up Lat filter
+    if(where.minLat && where.maxLat){
+        filter.lat = {
+            [Op.between]: [where.minLat, where.maxLat]
+        }
+    } else if (where.minLat){
+        filter.lat = {
+            [Op.gt]: where.minLat
+        }
+    } else if (where.maxLat){
+        filter.lat = {
+            [Op.lt]: where.maxLat
+        }
+    }
+    //Setting up Lng filter
+    if(where.minLng && where.maxLng){
+        filter.lng = {
+            [Op.between]: [where.minLng, where.maxLng]
+        }
+    } else if (where.minLng){
+        filter.lng = {
+            [Op.gt]: where.minLng
+        }
+    } else if (where.maxLng){
+        filter.lng = {
+            [Op.lt]: where.maxLng
+        }
+    }
+    //Setting up price filter
+    if(where.minPrice && where.maxPrice){
+        filter.price = {
+            [Op.between]: [where.minPrice, where.maxPrice]
+        }
+    } else if (where.minPrice){
+        filter.price = {
+            [Op.gt]: where.minPrice
+        }
+    } else if (where.maxPrice){
+        filter.price = {
+            [Op.lt]: where.maxPrice
+        }
+    }
+    //===================================================
+
     const spots = await Spot.findAll({
-        raw: true,
+        // raw: true,
         //The inclusion of all attributes as seen below is necessary for getting rid of the model name of SpotImages in the response
+        where: filter,
+        // ...query,
+
         attributes: [
             'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating',
             [sequelize.col('SpotImages.url'), 'previewImage']
@@ -29,7 +142,12 @@ router.get("/", async(req, res) => {
         },
     });
 
-    return res.json({Spots: spots})
+    if(Object.keys(errors).length){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+
+    return res.json({Spots: spots, page, size})
 })
 
 // Get Spots of Current User
