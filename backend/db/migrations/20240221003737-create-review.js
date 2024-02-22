@@ -45,7 +45,7 @@ module.exports = {
         type: Sequelize.DATE
       }
     }, options);
-    await queryInterface.addIndex('Reviews', ['userId', 'spotId'], { unique: true, options })
+    await queryInterface.addIndex('Reviews', ['userId', 'spotId'], { unique: true })
   },
   async down(queryInterface, Sequelize) {
     options.tableName = "Reviews"
