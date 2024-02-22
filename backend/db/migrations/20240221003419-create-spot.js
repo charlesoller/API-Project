@@ -70,9 +70,10 @@ module.exports = {
       updatedAt: {
         type: Sequelize.DATE
       },
-    });
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Spots');
+    options.tableName = "Spots"
+    await queryInterface.dropTable(options);
   }
 };

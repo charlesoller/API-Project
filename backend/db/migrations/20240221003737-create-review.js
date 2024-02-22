@@ -44,10 +44,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
-    await queryInterface.addIndex('Reviews', ['userId', 'spotId'], { unique: true })
+    }, options);
+    await queryInterface.addIndex('Reviews', ['userId', 'spotId'], { unique: true, options })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Reviews');
+    options.tableName = "Reviews"
+    await queryInterface.dropTable(options);
   }
 };
