@@ -4,6 +4,11 @@ const { Op } = require('sequelize');
 const { Booking, Spot, SpotImage } = require('../../db/models');
 const router = express.Router();
 
+
+/* ==============================================================================================================
+                                                GET ROUTES
+============================================================================================================== */
+
 // Get all Bookings
 router.get("/", async(req, res) => {
     const bookings = await Booking.findAll();
@@ -40,7 +45,6 @@ router.get("/current", async(req, res) => {
         delete bookings[i].Spot.dataValues.SpotImages
         bookings[i].Spot.dataValues.previewImage = url
     }
-
     // ------------------------------------------
 
     return res.json({Bookings: bookings})
