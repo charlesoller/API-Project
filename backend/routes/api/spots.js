@@ -38,7 +38,7 @@ router.get("/", async(req, res) => {
     }
 
     query.limit = size;
-    query.offset = size * (page - 1);
+    query.offset = (page - 1) * size;
     // ============================================
     // BUILDING WHERE ==============================
     // CHECK LAT -----------------------------------
@@ -125,22 +125,29 @@ router.get("/", async(req, res) => {
         // raw: true,
         //The inclusion of all attributes as seen below is necessary for getting rid of the model name of SpotImages in the response
         where: filter,
-        // ...query,
-
-        attributes: [
-            'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating',
-            [sequelize.col('SpotImages.url'), 'previewImage']
-        ],
+        ...query,
+        attributes: {
+            exclude: [ 'numReviews' ]
+        },
+        // attributes: [
+        //     'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating',
+        // ],
         include: {
             model: SpotImage,
             where: {
-                spotId: sequelize.col('spot.id'),
                 preview: true
             },
             required: true,
-            attributes: []
+            attributes: ['url']
         },
     });
+    // REPLACE CODE BELOW EVENTUALLY
+    for(let i = 0; i < spots.length; i++){
+        const url = spots[i].dataValues.SpotImages[0].dataValues.url
+        delete spots[i].dataValues.SpotImages
+        spots[i].dataValues.previewImage = url
+    }
+    // ------------------------------------------
 
     if(Object.keys(errors).length){
         err.errors = errors
