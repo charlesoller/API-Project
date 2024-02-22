@@ -318,6 +318,7 @@ router.post("/:id/bookings", async(req, res) => {
         errors.startDate = "startDate cannot be in the past"
     }
 
+    // Possible issue here
     if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
         errors.endDate = "endDate cannot be on or before startDate"
     }
