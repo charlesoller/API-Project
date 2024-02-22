@@ -14,7 +14,7 @@ module.exports = {
         userId: 1,
         spotId: 1,
         review: "Pretty sweet place.",
-        stars: 4.5
+        stars: 4
       },
       {
         userId: 3,
@@ -26,7 +26,7 @@ module.exports = {
         userId: 2,
         spotId: 2,
         review: "It was good.",
-        stars: 3.5
+        stars: 3
       },
     ], { validate: true });
   },
