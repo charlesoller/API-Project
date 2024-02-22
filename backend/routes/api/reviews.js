@@ -63,12 +63,25 @@ router.get("/current", async(req, res) => {
                                                 POST ROUTES
 ============================================================================================================== */
 
+// Add image to a review
 router.post("/:id/images", async(req, res) => {
     const userId = req.user?.id
     const { id } = req.params
     const { url } = req.body
 
-    const review = await Review.findByPk(id)
+    const review = await Review.findByPk(id, {raw: true})
+    if(!review){
+        return res.status(404).json({ message: "Review couldn't be found"})
+    }
+    
+    const currReviewImages = await ReviewImage.findAll({
+        where: { reviewId: id },
+        raw: true
+    })
+    if(currReviewImages.length >= 10){
+        return res.status(403).json({ message: "Maximum number of images for this resource was reached"})
+    }
+
     if(!userId || review.userId !== userId){
         return res.status(404).json({ message: "You are not authorized to update this review." })
     }
@@ -80,12 +93,7 @@ router.post("/:id/images", async(req, res) => {
 
     return res.json({
         id: reviewImage.id,
-        userId: userId,
-        spotId: id,
-        review: review.review,
-        stars: review.stars,
-        createdAt: reviewImage.createdAt,
-        updatedAt: reviewImage.updatedAt
+        url: reviewImage.url
     })
 })
 
