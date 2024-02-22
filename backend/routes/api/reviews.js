@@ -73,7 +73,7 @@ router.post("/:id/images", async(req, res) => {
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found"})
     }
-    
+
     const currReviewImages = await ReviewImage.findAll({
         where: { reviewId: id },
         raw: true
@@ -95,6 +95,15 @@ router.post("/:id/images", async(req, res) => {
         id: reviewImage.id,
         url: reviewImage.url
     })
+})
+
+/* ==============================================================================================================
+                                                PUT ROUTES
+============================================================================================================== */
+
+router.put("/:id", async(req, res) => {
+    const userId = req.user?.id
+    const { id } = req.params
 })
 
 module.exports = router;
