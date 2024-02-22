@@ -55,6 +55,13 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
   }, {
+    indexes: [
+      {
+        name: 'unique_index',
+        unique: true,
+        fields: ['userId', 'spotId' ]
+      }
+    ],
     sequelize,
     modelName: 'Review',
   });
