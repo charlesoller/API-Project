@@ -35,11 +35,11 @@ module.exports = (sequelize, DataTypes) => {
   Review.init({
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     spotId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     review: {
       type: DataTypes.STRING,
@@ -55,6 +55,13 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
   }, {
+    indexes: [
+      {
+          name: 'unique_index',
+          unique: true,
+          fields: ['userId', 'spotId' ]
+      }
+    ],
     sequelize,
     modelName: 'Review',
   });
