@@ -120,4 +120,31 @@ router.put("/:bookingId", async(req, res) => {
     return res.json(booking)
 })
 
+/* ==============================================================================================================
+                                                DELETE ROUTES
+============================================================================================================== */
+
+// Delete a Spot
+router.delete("/:bookingId", async (req, res) => {
+    const { bookingId } = req.params
+    const userId = req.user?.id
+    const booking = await Booking.findByPk(bookingId)
+
+    if(!booking){
+        return res.status(404).json({ message: "Booking couldn't be found" })
+    }
+
+    const spot = await Spot.findByPk(booking.spotId)
+    if(!userId || ( booking.userId !== userId && spot.ownerId !== userId )){
+        return res.status(404).json({ message: "You are not authorized to delete this booking." })
+    }
+
+    if(booking.startDate < Date.now()){
+        return res.status(403).json({ message: "Bookings that have been started can't be deleted" })
+    }
+
+    await booking.destroy()
+    res.json({ message: "Successfully deleted"})
+})
+
 module.exports = router;
