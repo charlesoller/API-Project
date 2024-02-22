@@ -101,12 +101,83 @@ router.post("/:id/images", async(req, res) => {
                                                 PUT ROUTES
 ============================================================================================================== */
 
+// Edit a Review
 router.put("/:id", async(req, res) => {
     const userId = req.user?.id
     const { id } = req.params
-    const { review, stars } = req.body
+    const { review: body, stars } = req.body
 
-    const review = Review.findByPk(id)
+    const review = await Review.findByPk(id)
+    const oldRating = review.stars;
+
+    if(!review){
+        return res.status(404).json({ message: "Review couldn't be found"})
+    }
+
+    if(!userId || review.userId !== userId){
+        return res.status(404).json({ message: "You are not authorized to update this review." })
+    }
+
+    try {
+        review.set({
+            review: body, stars
+        })
+        await review.save()
+
+        //Updating the spot's rating, not very efficient, should have probably gone with the other db model if I have to do this anyways
+        const reviews = await Review.findAll({
+            where: { spotId: id },
+            raw: true
+        })
+        let total = 0
+        reviews.forEach((r) => total += r.stars)
+        const avg = Number((total / reviews.length).toFixed(2))
+
+        const spot = await Spot.findByPk(id)
+        spot.set({
+            avgRating: avg
+        })
+        await spot.save()
+
+        return res.json(review);
+
+    } catch(e) {
+        const err = { message: "Bad Request" }
+        const errors = {}
+        e.errors.forEach(error => {
+            const errItem = error.path
+            switch (errItem) {
+                case 'stars': errors.stars = "Stars must be an integer from 1 to 5"; break;
+                case 'review': errors.city = "Review text is required"; break;
+                default: errors.default = "No error found. Please try again."; break;
+            }
+        })
+
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+})
+
+/* ==============================================================================================================
+                                                DELETE ROUTES
+============================================================================================================== */
+
+// Delete a Spot
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params
+    const userId = req.user?.id
+    const review = await Review.findByPk(id)
+
+    if(!review){
+        return res.status(404).json({ message: "Review couldn't be found" })
+    }
+
+    if(!userId || review.userId !== userId){
+        return res.status(404).json({ message: "You are not authorized to delete this review." })
+    }
+
+    await review.destroy()
+    res.json({ message: "Successfully deleted"})
 })
 
 module.exports = router;
