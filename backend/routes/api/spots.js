@@ -1,6 +1,6 @@
 const express = require('express')
 const { Op } = require('sequelize');
-const { Spot, SpotImage, User } = require('../../db/models');
+const { Spot, SpotImage, User, Review, ReviewImage } = require('../../db/models');
 const router = express.Router();
 const sequelize = require('sequelize');
 const spot = require('../../db/models/spot');
@@ -101,6 +101,33 @@ router.get("/:id", async(req, res) => {
     return res.json(spot)
 })
 
+// Get All Reviews by Spot Id
+router.get("/:id/reviews", async(req, res) => {
+    const { id } = req.params
+
+    const reviews = await Review.findAll({
+        where: {
+            spotId: id
+        },
+        include: [
+            {
+                model: User,
+                attributes: [ 'id', 'firstName', 'lastName' ]
+            },
+            {
+                model: ReviewImage,
+                attributes: [ 'id', 'url' ]
+            }
+        ]
+    })
+
+    if(!reviews.length){
+        return res.status(404).json({message: "Spot couldn't be found"})
+    }
+
+    return res.json(reviews)
+})
+
 /* ==============================================================================================================
                                                 POST ROUTES
 ============================================================================================================== */
@@ -160,6 +187,34 @@ router.post("/:id/images", async(req, res) => {
         id: spotImage.id,
         url: spotImage.url,
         preview: spotImage.preview
+    })
+})
+
+// Create a review for a spot
+router.post("/:id/reviews", async(req, res) => {
+    const { review, stars } = req.body
+
+    const userId = req.user.id
+    const spotId = req.params.id
+
+    const spot = await Spot.findByPk(spotId)
+    if(!spot){
+        return res.status(404).json({message: "Spot couldn't be found"})
+    }
+    const newReview = await Review.create({ spotId, userId, review, stars })
+    const newRating = (spot.avgRating * spot.numReviews + stars) / (spot.numReviews + 1)
+
+    // Updating spot to reflect new review
+    spot.set({
+        numReviews: spot.numReviews + 1,
+        avgRating: Number(newRating.toFixed(2))
+    })
+    await spot.save()
+
+    console.log(spot)
+    return res.json({
+        review: newReview.review,
+        stars: newReview.stars
     })
 })
 
