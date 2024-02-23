@@ -163,6 +163,7 @@ router.get("/", async(req, res) => {
 
 // Get Spots of Current User
 router.get("/current", async(req, res) => {
+    //:::::::: should do some testing here and maybe rework it just a little bit
     try {
         const { id } = req.user
         const spots = await Spot.findAll({
@@ -192,6 +193,8 @@ router.get("/current", async(req, res) => {
 })
 
 // Get Details of a Spot by Id
+// :::::::::::::::: ROUTE HAS ISSUES IN DEPLOY ::::::::::::::::::::::::::::
+// "missing FROM-clause entry for table \"spot\""
 router.get("/:id", async(req, res) => {
     const { id } = req.params;
     let spot = await Spot.findOne({
@@ -205,9 +208,6 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['spotId', 'createdAt', 'updatedAt']
                 },
-                where: {
-                    spotId: sequelize.col('spot.id')
-                }
             },
             {
                 model: User,
@@ -215,9 +215,6 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
                 },
-                where: {
-                    id: sequelize.col('spot.ownerId')
-                }
             }
         ]
     })
