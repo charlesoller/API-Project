@@ -96,6 +96,7 @@ router.put("/:bookingId", async(req, res) => {
         const currBooking = bookings[i].dataValues
         const sd = currBooking.startDate.toISOString().split("T")[0]
         const ed = currBooking.endDate.toISOString().split("T")[0]
+        // REVISIT THESE ERRORS - may be a little bit too judicious
         if(currBooking.id !== parseInt(bookingId)){
             if(
                 sd === startDate

@@ -432,6 +432,7 @@ router.post("/:id/bookings", async(req, res) => {
         const booking = bookings[i].dataValues
         const sd = booking.startDate.toISOString().split("T")[0]
         const ed = booking.endDate.toISOString().split("T")[0]
+        // REVISIT THESE ERRORS - may be a little bit too judicious
         if(
             sd === startDate
             || sd === endDate
