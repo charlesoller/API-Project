@@ -4,6 +4,7 @@ const { Spot, SpotImage, User, Review, ReviewImage, Booking } = require('../../d
 const router = express.Router();
 const sequelize = require('sequelize');
 const spot = require('../../db/models/spot');
+const { formatDate } = require('../../utils/helper');
 
 /* ==============================================================================================================
                                                 GET ROUTES
@@ -121,7 +122,7 @@ router.get("/", async(req, res) => {
     }
     //===================================================
 
-    const spots = await Spot.findAll({
+    let spots = await Spot.findAll({
         // raw: true,
         //The inclusion of all attributes as seen below is necessary for getting rid of the model name of SpotImages in the response
         where: filter,
@@ -154,6 +155,9 @@ router.get("/", async(req, res) => {
         return res.status(400).json(err)
     }
 
+
+
+    spots = formatDate(spots)
     return res.json({Spots: spots, page, size})
 })
 
@@ -190,7 +194,7 @@ router.get("/current", async(req, res) => {
 // Get Details of a Spot by Id
 router.get("/:id", async(req, res) => {
     const { id } = req.params;
-    const spot = await Spot.findOne({
+    let spot = await Spot.findOne({
         where: { id },
         attributes: [
             'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews',
@@ -222,7 +226,7 @@ router.get("/:id", async(req, res) => {
             message: "Spot couldn't be found"
         })
     }
-
+    spot = formatDate(spot)
     return res.json(spot)
 })
 
@@ -230,7 +234,7 @@ router.get("/:id", async(req, res) => {
 router.get("/:id/reviews", async(req, res) => {
     const { id } = req.params
 
-    const reviews = await Review.findAll({
+    let reviews = await Review.findAll({
         where: {
             spotId: id
         },
@@ -250,7 +254,8 @@ router.get("/:id/reviews", async(req, res) => {
         return res.status(404).json({message: "Spot couldn't be found"})
     }
 
-    return res.json(reviews)
+    reviews = formatDate(reviews)
+    return res.json({ Reviews: reviews })
 })
 
 // Get All Bookings by Spot Id
@@ -266,7 +271,7 @@ router.get("/:id/bookings", async(req, res) => {
     }
 
     if(userId === spot.ownerId){
-        const bookings = await Booking.findAll({
+        let bookings = await Booking.findAll({
             where: {
                 spotId: id
             },
@@ -275,16 +280,16 @@ router.get("/:id/bookings", async(req, res) => {
                 attributes: [ 'id', 'firstName', 'lastName' ]
             },
         })
-
+        bookings = formatDate(bookings)
         return res.json({Bookings: bookings})
     } else {
-        const bookings = await Booking.findAll({
+        let bookings = await Booking.findAll({
             where: {
                 spotId: id
             },
             attributes: ['spotId', 'startDate', 'endDate']
         })
-
+        bookings = formatDate(bookings)
         return res.json({Bookings: bookings})
     }
 })
@@ -302,7 +307,8 @@ router.post("/", async(req, res) => {
     }
 
     try {
-        const spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
+        let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
+        spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
         const err = { message: "Bad Request" }
@@ -337,12 +343,11 @@ router.post("/:id/images", async(req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(spot.ownerId !== userId){
-        return res.status(403).json({message: "Forbidden"})
-    }
-
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
+    }
+    if(spot.ownerId !== userId){
+        return res.status(403).json({message: "Forbidden"})
     }
 
     const spotImage = await SpotImage.create({ spotId: id, url, preview })
@@ -369,7 +374,7 @@ router.post("/:id/reviews", async(req, res) => {
     }
 
     try {
-        const newReview = await Review.create({ spotId, userId, review, stars })
+        let newReview = await Review.create({ spotId, userId, review, stars })
         const newRating = (spot.avgRating * spot.numReviews + stars) / (spot.numReviews + 1)
 
         // Updating spot to reflect new review
@@ -379,6 +384,7 @@ router.post("/:id/reviews", async(req, res) => {
         })
         await spot.save()
 
+        newReview = formatDate(newReview)
         return res.json(newReview)
     } catch (e) {
         const err = { message: "Bad Request" }
@@ -388,17 +394,19 @@ router.post("/:id/reviews", async(req, res) => {
             switch (errItem) {
                 case 'stars': errors.stars = "Stars must be an integer from 1 to 5"; break;
                 case 'review': errors.city = "Review text is required"; break;
-                default: errors.default = "No error found. Please try again."; break;
+                default: errors.default = "User already has a review for this spot"; break;
             }
         })
 
+        if(errors.default){
+            return res.status(500).json({message: "User already has a review for this spot"})
+        }
         err.errors = errors
         return res.status(400).json(err)
     }
 })
 
 // Post a booking
-// MODIFY :::: SHOULD ERROR WHEN DATES SURROUND BOOKING
 router.post("/:id/bookings", async(req, res) => {
     const { startDate, endDate } = req.body
     const { id } = req.params
@@ -408,14 +416,14 @@ router.post("/:id/bookings", async(req, res) => {
             model: Booking,
         },
     })
-    if(!userId || spot.ownerId === userId){
+    if(!userId){
         return res.status(401).json({ message: "Authentication required" })
-    }
-    if(spot.ownerId === userId){
-        return res.status(403).json({message: "Forbidden"})
     }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
+    }
+    if(spot.ownerId === userId){
+        return res.status(403).json({message: "Forbidden"})
     }
     const err = {message: "Bad Request"};
     const errors = {};
@@ -428,6 +436,7 @@ router.post("/:id/bookings", async(req, res) => {
             sd === startDate
             || sd === endDate
             || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
+            || Date.parse(sd) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate)
         ){
             err.message = "Sorry, this spot is already booked for the specified dates"
             errors.startDate = "Start date conflicts with an existing booking"
@@ -436,6 +445,7 @@ router.post("/:id/bookings", async(req, res) => {
             ed === endDate
             || ed === startDate
             || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
+            || Date.parse(ed) < Date.parse(endDate) && Date.parse(ed) > Date.parse(startDate)
         ){
             err.message = "Sorry, this spot is already booked for the specified dates"
             errors.endDate = "End date conflicts with an existing booking"
@@ -457,13 +467,13 @@ router.post("/:id/bookings", async(req, res) => {
         errors.endDate = "endDate cannot be on or before startDate"
     }
 
-    const booking = await Booking.create({userId, spotId: id, startDate, endDate})
+    let booking = await Booking.create({userId, spotId: id, startDate, endDate})
 
     if(errors.startDate || errors.endDate){
         err.errors = errors
         return res.status(400).json(err)
     }
-
+    booking = formatDate(booking)
     return res.json(booking)
 })
 
@@ -476,17 +486,16 @@ router.put("/:id", async(req, res) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body
     const { id } = req.params
     const userId = req.user?.id
-    const spot = await Spot.findByPk(id)
+    let spot = await Spot.findByPk(id)
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
-    }
-    if(spot.ownerId !== userId){
-        return res.status(403).json({ message: "Forbidden" })
     }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
     }
-
+    if(spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
 
 
     try {
@@ -494,6 +503,7 @@ router.put("/:id", async(req, res) => {
             address, city, state, country, lat, lng, name, description, price
         })
         await spot.save()
+        spot = formatDate(spot)
         return res.json({
             // This is to exclude numReviews and avgRating
             id: spot.id,

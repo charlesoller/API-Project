@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const sequelize = require('sequelize');
 
 const { Review, User, Spot, ReviewImage, SpotImage } = require('../../db/models');
+const { formatDate } = require('../../utils/helper');
 const router = express.Router();
 
 
@@ -24,7 +25,7 @@ router.get("/current", async(req, res) => {
         return res.status(401).json({message: "Authentication required"})
     }
 
-    const reviews = await Review.findAll({
+    let reviews = await Review.findAll({
         where: { userId },
         include: [
             {
@@ -58,6 +59,7 @@ router.get("/current", async(req, res) => {
     }
     // ------------------------------------------
 
+    reviews = formatDate(reviews)
     return res.json({Reviews: reviews})
 })
 
@@ -75,11 +77,11 @@ router.post("/:reviewId/images", async(req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(review.userId !== userId){
-        return res.status(403).json({message: "Forbidden"})
-    }
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found"})
+    }
+    if(review.userId !== userId){
+        return res.status(403).json({message: "Forbidden"})
     }
 
     const currReviewImages = await ReviewImage.findAll({
@@ -89,8 +91,6 @@ router.post("/:reviewId/images", async(req, res) => {
     if(currReviewImages.length >= 10){
         return res.status(403).json({ message: "Maximum number of images for this resource was reached"})
     }
-
-
 
     const reviewImage = await ReviewImage.create({
         reviewId,
@@ -116,18 +116,13 @@ router.put("/:id", async(req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(review.userId !== userId){
-        return res.status(403).json({ message: "Forbidden" })
-    }
-
-    const review = await Review.findByPk(id)
+    let review = await Review.findByPk(id)
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found"})
     }
-    const oldRating = review.stars;
-
-
-
+    if(review.userId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
 
     try {
         review.set({
@@ -150,6 +145,7 @@ router.put("/:id", async(req, res) => {
         })
         await spot.save()
 
+        review = formatDate(review)
         return res.json(review);
 
     } catch(e) {
@@ -181,12 +177,13 @@ router.delete("/:id", async (req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(review.userId !== userId){
-        return res.status(403).json({ message: "Forbidden" })
-    }
     if(!review){
         return res.status(404).json({ message: "Review couldn't be found" })
     }
+    if(review.userId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
+
 
 
 

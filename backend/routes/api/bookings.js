@@ -2,8 +2,8 @@ const express = require('express')
 const { Op } = require('sequelize');
 
 const { Booking, Spot, SpotImage } = require('../../db/models');
+const { formatDate } = require('../../utils/helper');
 const router = express.Router();
-
 
 /* ==============================================================================================================
                                                 GET ROUTES
@@ -23,7 +23,7 @@ router.get("/current", async(req, res) => {
         return res.status(401).json({message: "Authentication required"})
     }
 
-    const bookings = await Booking.findAll({
+    let bookings = await Booking.findAll({
         where: { userId },
         include: {
             model: Spot,
@@ -46,7 +46,7 @@ router.get("/current", async(req, res) => {
         bookings[i].Spot.dataValues.previewImage = url
     }
     // ------------------------------------------
-
+    bookings = formatDate(bookings)
     return res.json({Bookings: bookings})
 })
 
@@ -55,8 +55,6 @@ router.get("/current", async(req, res) => {
 ============================================================================================================== */
 
 // Update a booking
-// MODIFY::::BOOKING SHOULDN'T CONFLICT WITH ITSELF
-// MODIFY::::SHOULD ERROR WHEN DATES SURROUND A BOOKING
 router.put("/:bookingId", async(req, res) => {
     const { startDate, endDate } = req.body
     const err = {message: "Bad Request"};
@@ -71,15 +69,15 @@ router.put("/:bookingId", async(req, res) => {
 
     const { bookingId } = req.params
     const userId = req.user?.id
-    const booking = await Booking.findByPk(bookingId)
+    let booking = await Booking.findByPk(bookingId)
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(userId !== booking.userId){
-        return res.status(403).json({ message: "Forbidden" })
-    }
     if(!booking){
         return res.status(404).json({ message: "Booking couldn't be found" })
+    }
+    if(userId !== booking.userId){
+        return res.status(403).json({ message: "Forbidden" })
     }
     if(booking.endDate < Date.now()){
         return res.status(403).json({ message: "Past bookings can't be modified"})
@@ -98,21 +96,25 @@ router.put("/:bookingId", async(req, res) => {
         const currBooking = bookings[i].dataValues
         const sd = currBooking.startDate.toISOString().split("T")[0]
         const ed = currBooking.endDate.toISOString().split("T")[0]
-        if(
-            sd === startDate
-            || sd === endDate
-            || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
-        ){
-            err.message = "Sorry, this spot is already booked for the specified dates"
-            errors.startDate = "Start date conflicts with an existing booking"
-        }
-        if(
-            ed === endDate
-            || ed === startDate
-            || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
-        ){
-            err.message = "Sorry, this spot is already booked for the specified dates"
-            errors.endDate = "End date conflicts with an existing booking"
+        if(currBooking.id !== parseInt(bookingId)){
+            if(
+                sd === startDate
+                || sd === endDate
+                || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
+                || Date.parse(sd) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate)
+            ){
+                err.message = "Sorry, this spot is already booked for the specified dates"
+                errors.startDate = "Start date conflicts with an existing booking"
+            }
+            if(
+                ed === endDate
+                || ed === startDate
+                || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
+                || Date.parse(ed) < Date.parse(endDate) && Date.parse(ed) > Date.parse(startDate)
+            ){
+                err.message = "Sorry, this spot is already booked for the specified dates"
+                errors.endDate = "End date conflicts with an existing booking"
+            }
         }
     }
 
@@ -123,6 +125,7 @@ router.put("/:bookingId", async(req, res) => {
 
     booking.set({userId, spotId: booking.spotId, startDate, endDate})
     await booking.save()
+    booking = formatDate(booking)
     return res.json(booking)
 })
 
@@ -139,14 +142,19 @@ router.delete("/:bookingId", async (req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required." })
     }
-    if(booking.userId !== userId && spot.ownerId !== userId){
-        return res.status(403).json({ message: "Forbidden" })
-    }
     if(!booking){
         return res.status(404).json({ message: "Booking couldn't be found" })
     }
 
     const spot = await Spot.findByPk(booking.spotId)
+    if(booking.userId !== userId && spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
+
+    if(!spot){
+        return res.status(404).json({ message: "Spot couldn't be found" })
+    }
+
 
 
     if(booking.startDate < Date.now()){

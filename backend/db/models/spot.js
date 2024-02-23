@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       Spot.hasMany(
         models.SpotImage,
         {
-          foreignKey: 'spotId'
+          foreignKey: 'spotId',
+          onDelete: 'CASCADE'
         }
       )
 
@@ -99,6 +100,9 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [5, 50]
+      }
     },
     price: {
       type: DataTypes.FLOAT,
