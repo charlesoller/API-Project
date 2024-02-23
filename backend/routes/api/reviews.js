@@ -59,6 +59,7 @@ router.get("/current", async(req, res) => {
     }
     // ------------------------------------------
 
+    //Possible issue here?
     reviews = formatDate(reviews)
     return res.json({Reviews: reviews})
 })
