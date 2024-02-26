@@ -176,7 +176,7 @@ router.get("/current", async(req, res) => {
             include: {
                 model: SpotImage,
                 where: {
-                    spotId: sequelize.col('spot.id'),
+                    // spotId: sequelize.col('spot.id'),
                     preview: true
                 },
                 required: true,
