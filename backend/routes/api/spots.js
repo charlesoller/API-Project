@@ -130,23 +130,22 @@ router.get("/", async(req, res) => {
         attributes: {
             exclude: [ 'numReviews' ]
         },
-        // attributes: [
-        //     'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating',
-        // ],
         include: {
             model: SpotImage,
-            where: {
-                preview: true
-            },
-            required: true,
-            attributes: ['url']
+            attributes: ['url', 'preview']
         },
     });
+
     // REPLACE CODE BELOW EVENTUALLY
     for(let i = 0; i < spots.length; i++){
-        const url = spots[i].dataValues.SpotImages[0].dataValues.url
-        delete spots[i].dataValues.SpotImages
-        spots[i].dataValues.previewImage = url
+        if(spots[i].dataValues.SpotImages.length){
+            const url = spots[i].dataValues.SpotImages[0].dataValues.url
+            delete spots[i].dataValues.SpotImages
+            spots[i].dataValues.previewImage = url
+        } else {
+            delete spots[i].dataValues.SpotImages
+            spots[i].dataValues.previewImage = null
+        }
     }
     // ------------------------------------------
 
@@ -166,22 +165,26 @@ router.get("/current", async(req, res) => {
     try {
         const { id } = req.user
         const spots = await Spot.findAll({
-            raw: true,
             where: {ownerId: id},
             attributes: [
-                'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating',
-                [sequelize.col('SpotImages.url'), 'previewImage']
-            ],
+                'id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'avgRating' ],
             include: {
                 model: SpotImage,
-                where: {
-                    // spotId: sequelize.col('spot.id'),
-                    preview: true
-                },
-                required: true,
-                attributes: []
+                attributes: ['url', 'preview']
             },
         });
+
+        // REPLACE CODE BELOW EVENTUALLY
+        for(let i = 0; i < spots.length; i++){
+            if(spots[i].dataValues.SpotImages.length){
+                const url = spots[i].dataValues.SpotImages[0].dataValues.url
+                delete spots[i].dataValues.SpotImages
+                spots[i].dataValues.previewImage = url
+            } else {
+                delete spots[i].dataValues.SpotImages
+                spots[i].dataValues.previewImage = null
+            }
+        }
 
         return res.json({Spots: spots})
         // SOMETHING WEIRD IN PROD HERE::::::::::::::
@@ -206,9 +209,6 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['spotId', 'createdAt', 'updatedAt']
                 },
-                where: {
-                    // spotId: sequelize.col('spot.id')
-                }
             },
             {
                 model: User,
@@ -216,9 +216,6 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
                 },
-                where: {
-                    // id: sequelize.col('spot.ownerId')
-                }
             }
         ]
     })
@@ -310,7 +307,7 @@ router.post("/", async(req, res) => {
     try {
         let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
         delete spot.numReviews
-        delete spot.avgRating
+        delete spot.avgRating   //These properties shouldn't show up in response
         spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
