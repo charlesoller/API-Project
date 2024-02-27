@@ -309,6 +309,8 @@ router.post("/", async(req, res) => {
 
     try {
         let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
+        delete spot.numReviews
+        delete spot.avgRating
         spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
@@ -560,13 +562,12 @@ router.delete("/:id", async (req, res) => {
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
-    if(spot.ownerId !== userId){
-        return res.status(403).json({ message: "Forbidden" })
-    }
     if(!spot){
         return res.status(404).json({ message: "Spot couldn't be found" })
     }
-
+    if(spot.ownerId !== userId){
+        return res.status(403).json({ message: "Forbidden" })
+    }
 
 
     await spot.destroy()
