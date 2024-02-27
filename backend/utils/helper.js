@@ -26,6 +26,7 @@ const formatDate = (data) => {
 
         return data
     } else {
+        if(!data.dataValues) return data;   // If it received an empty object, return directly
         const obj = data.dataValues
         if(obj.createdAt){
             let date = obj.createdAt.toISOString().split(".")[0]
