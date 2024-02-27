@@ -175,7 +175,7 @@ router.get("/current", async(req, res) => {
             include: {
                 model: SpotImage,
                 where: {
-                    spotId: sequelize.col('spot.id'),
+                    // spotId: sequelize.col('spot.id'),
                     preview: true
                 },
                 required: true,
@@ -184,6 +184,7 @@ router.get("/current", async(req, res) => {
         });
 
         return res.json({Spots: spots})
+        // SOMETHING WEIRD IN PROD HERE::::::::::::::
     } catch {
         return res.status(401).json({
             message: "Authentication required"
@@ -206,7 +207,7 @@ router.get("/:id", async(req, res) => {
                     exclude: ['spotId', 'createdAt', 'updatedAt']
                 },
                 where: {
-                    spotId: sequelize.col('spot.id')
+                    // spotId: sequelize.col('spot.id')
                 }
             },
             {
@@ -216,7 +217,7 @@ router.get("/:id", async(req, res) => {
                     exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
                 },
                 where: {
-                    id: sequelize.col('spot.ownerId')
+                    // id: sequelize.col('spot.ownerId')
                 }
             }
         ]
