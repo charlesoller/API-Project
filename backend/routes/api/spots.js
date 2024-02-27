@@ -333,6 +333,7 @@ router.post("/", async(req, res) => {
 
 // Add Image to a Spot
 router.post("/:id/images", async(req, res) => {
+    console.log("TEST")
     const { url, preview } = req.body
     const { id } = req.params
     const userId = req.user?.id
@@ -422,6 +423,14 @@ router.post("/:id/bookings", async(req, res) => {
     if(spot.ownerId === userId){
         return res.status(403).json({message: "Forbidden"})
     }
+    if(Date.parse(startDate) < Date.now()){
+        errors.startDate = "startDate cannot be in the past"
+    }
+
+    // Possible issue here
+    if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
+        errors.endDate = "endDate cannot be on or before startDate"
+    }
     const err = {message: "Bad Request"};
     const errors = {};
     const bookings = spot.dataValues.Bookings
@@ -453,16 +462,6 @@ router.post("/:id/bookings", async(req, res) => {
     if(errors.endDate || errors.startDate){
         err.errors = errors
         return res.status(403).json(err)
-    }
-
-
-    if(Date.parse(startDate) < Date.now()){
-        errors.startDate = "startDate cannot be in the past"
-    }
-
-    // Possible issue here
-    if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
-        errors.endDate = "endDate cannot be on or before startDate"
     }
 
     let booking = await Booking.create({userId, spotId: id, startDate, endDate})
