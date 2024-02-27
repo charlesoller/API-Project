@@ -60,18 +60,6 @@ router.put("/:bookingId", async(req, res) => {
     const err = {message: "Bad Request"};
     const errors = {};
 
-    if(Date.parse(startDate) < Date.now()){
-        errors.startDate = "startDate cannot be in the past"
-    }
-    if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
-        errors.endDate = "endDate cannot be on or before startDate"
-    }
-
-    if(errors.startDate || errors.endDate){
-        err.errors = errors
-        return res.status(400).json(err)
-    }
-
     const { bookingId } = req.params
     const userId = req.user?.id
     let booking = await Booking.findByPk(bookingId)
@@ -84,10 +72,21 @@ router.put("/:bookingId", async(req, res) => {
     if(userId !== booking.userId){
         return res.status(403).json({ message: "Forbidden" })
     }
+    if(Date.parse(startDate) < Date.now()){
+        errors.startDate = "startDate cannot be in the past"
+    }
+    if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
+        errors.endDate = "endDate cannot be on or before startDate"
+    }
+
+    if(errors.startDate || errors.endDate){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+
     if(booking.endDate < Date.now()){
         return res.status(403).json({ message: "Past bookings can't be modified"})
     }
-
 
     const spot = await Spot.findByPk(booking.spotId, {
         include: {
