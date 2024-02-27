@@ -67,6 +67,11 @@ router.put("/:bookingId", async(req, res) => {
         errors.endDate = "endDate cannot be on or before startDate"
     }
 
+    if(errors.startDate || errors.endDate){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+
     const { bookingId } = req.params
     const userId = req.user?.id
     let booking = await Booking.findByPk(bookingId)
@@ -99,19 +104,19 @@ router.put("/:bookingId", async(req, res) => {
         // REVISIT THESE ERRORS - may be a little bit too judicious
         if(currBooking.id !== parseInt(bookingId)){
             if(
-                sd === startDate
-                || sd === endDate
-                || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
-                || Date.parse(sd) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate)
+                startDate === sd
+                || startDate === ed
+                || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd)) // in the middle of current booking
+                || Date.parse(ed) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate) // surrounds existing
             ){
                 err.message = "Sorry, this spot is already booked for the specified dates"
                 errors.startDate = "Start date conflicts with an existing booking"
             }
             if(
-                ed === endDate
-                || ed === startDate
-                || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
-                || Date.parse(ed) < Date.parse(endDate) && Date.parse(ed) > Date.parse(startDate)
+                endDate === ed
+                || endDate === sd
+                || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd)) // in the middle of current start date
+                || Date.parse(ed) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate) // surrounds existing
             ){
                 err.message = "Sorry, this spot is already booked for the specified dates"
                 errors.endDate = "End date conflicts with an existing booking"

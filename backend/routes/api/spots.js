@@ -163,7 +163,6 @@ router.get("/", async(req, res) => {
 
 // Get Spots of Current User
 router.get("/current", async(req, res) => {
-    //:::::::: should do some testing here and maybe rework it just a little bit
     try {
         const { id } = req.user
         const spots = await Spot.findAll({
@@ -176,7 +175,7 @@ router.get("/current", async(req, res) => {
             include: {
                 model: SpotImage,
                 where: {
-                    // spotId: sequelize.col('spot.id'),
+                    spotId: sequelize.col('spot.id'),
                     preview: true
                 },
                 required: true,
@@ -193,8 +192,6 @@ router.get("/current", async(req, res) => {
 })
 
 // Get Details of a Spot by Id
-// :::::::::::::::: ROUTE HAS ISSUES IN DEPLOY ::::::::::::::::::::::::::::
-// "missing FROM-clause entry for table \"spot\""
 router.get("/:id", async(req, res) => {
     const { id } = req.params;
     let spot = await Spot.findOne({
@@ -208,6 +205,9 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['spotId', 'createdAt', 'updatedAt']
                 },
+                where: {
+                    spotId: sequelize.col('spot.id')
+                }
             },
             {
                 model: User,
@@ -215,6 +215,9 @@ router.get("/:id", async(req, res) => {
                 attributes: {
                     exclude: ['username', 'email', 'hashedPassword', 'createdAt', 'updatedAt']
                 },
+                where: {
+                    id: sequelize.col('spot.ownerId')
+                }
             }
         ]
     })
@@ -333,7 +336,6 @@ router.post("/", async(req, res) => {
 
 // Add Image to a Spot
 router.post("/:id/images", async(req, res) => {
-    console.log("TEST")
     const { url, preview } = req.body
     const { id } = req.params
     const userId = req.user?.id
@@ -423,6 +425,9 @@ router.post("/:id/bookings", async(req, res) => {
     if(spot.ownerId === userId){
         return res.status(403).json({message: "Forbidden"})
     }
+    const err = {message: "Bad Request"};
+    const errors = {};
+
     if(Date.parse(startDate) < Date.now()){
         errors.startDate = "startDate cannot be in the past"
     }
@@ -431,8 +436,12 @@ router.post("/:id/bookings", async(req, res) => {
     if(startDate === endDate || Date.parse(endDate) < Date.parse(startDate)){
         errors.endDate = "endDate cannot be on or before startDate"
     }
-    const err = {message: "Bad Request"};
-    const errors = {};
+
+    if(errors.startDate || errors.endDate){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
+
     const bookings = spot.dataValues.Bookings
     for(let i = 0; i < bookings.length; i++){
         const booking = bookings[i].dataValues
@@ -440,19 +449,19 @@ router.post("/:id/bookings", async(req, res) => {
         const ed = booking.endDate.toISOString().split("T")[0]
         // REVISIT THESE ERRORS - may be a little bit too judicious
         if(
-            sd === startDate
-            || sd === endDate
-            || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd))
-            || Date.parse(sd) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate)
+            startDate === sd
+            || startDate === ed
+            || (Date.parse(startDate) < Date.parse(ed) && Date.parse(startDate) > Date.parse(sd)) // in the middle of current booking
+            || Date.parse(ed) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate) // surrounds existing
         ){
             err.message = "Sorry, this spot is already booked for the specified dates"
             errors.startDate = "Start date conflicts with an existing booking"
         }
         if(
-            ed === endDate
-            || ed === startDate
-            || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd))
-            || Date.parse(ed) < Date.parse(endDate) && Date.parse(ed) > Date.parse(startDate)
+            endDate === ed
+            || endDate === sd
+            || (Date.parse(endDate) < Date.parse(ed) && Date.parse(endDate) > Date.parse(sd)) // in the middle of current start date
+            || Date.parse(ed) < Date.parse(endDate) && Date.parse(sd) > Date.parse(startDate) // surrounds existing
         ){
             err.message = "Sorry, this spot is already booked for the specified dates"
             errors.endDate = "End date conflicts with an existing booking"
@@ -466,10 +475,6 @@ router.post("/:id/bookings", async(req, res) => {
 
     let booking = await Booking.create({userId, spotId: id, startDate, endDate})
 
-    if(errors.startDate || errors.endDate){
-        err.errors = errors
-        return res.status(400).json(err)
-    }
     booking = formatDate(booking)
     return res.json(booking)
 })
