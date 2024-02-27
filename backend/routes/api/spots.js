@@ -232,6 +232,11 @@ router.get("/:id", async(req, res) => {
 router.get("/:id/reviews", async(req, res) => {
     const { id } = req.params
 
+    const spot = await Spot.findByPk(id)
+    if(!spot){
+        return res.status(404).json({message: "Spot couldn't be found"})
+    }
+
     let reviews = await Review.findAll({
         where: {
             spotId: id
@@ -248,9 +253,7 @@ router.get("/:id/reviews", async(req, res) => {
         ]
     })
 
-    if(!reviews.length){
-        return res.status(404).json({message: "Spot couldn't be found"})
-    }
+
 
     reviews = formatDate(reviews)
     return res.json({ Reviews: reviews })
