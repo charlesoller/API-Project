@@ -309,8 +309,8 @@ router.post("/", async(req, res) => {
 
     try {
         let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
-        delete spot.numReviews
-        delete spot.avgRating   //These properties shouldn't show up in response
+        spot.numReviews = undefined
+        spot.avgRating = undefined   //These properties shouldn't show up in response
         spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
