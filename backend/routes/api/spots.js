@@ -31,6 +31,8 @@ router.get("/", async(req, res) => {
     // PAGINATION =================================
     let page = req.query.page === undefined ? 1 : parseInt(req.query.page);
     let size = req.query.size === undefined ? 20 : parseInt(req.query.size);
+    if(isNaN(page)) page = 1
+    if(isNaN(size)) size = 20
     if(typeof page !== "number" || page < 1) {
         errors.page = "Page must be greater than or equal to 1"
     }
@@ -121,10 +123,13 @@ router.get("/", async(req, res) => {
         }
     }
     //===================================================
+    if(Object.keys(errors).length){
+        err.errors = errors
+        return res.status(400).json(err)
+    }
 
     let spots = await Spot.findAll({
         // raw: true,
-        //The inclusion of all attributes as seen below is necessary for getting rid of the model name of SpotImages in the response
         where: filter,
         ...query,
         attributes: {
@@ -148,11 +153,6 @@ router.get("/", async(req, res) => {
         }
     }
     // ------------------------------------------
-
-    if(Object.keys(errors).length){
-        err.errors = errors
-        return res.status(400).json(err)
-    }
 
 
 
@@ -187,7 +187,6 @@ router.get("/current", async(req, res) => {
         }
 
         return res.json({Spots: spots})
-        // SOMETHING WEIRD IN PROD HERE::::::::::::::
     } catch {
         return res.status(401).json({
             message: "Authentication required"
@@ -450,7 +449,6 @@ router.post("/:id/bookings", async(req, res) => {
         const booking = bookings[i].dataValues
         const sd = booking.startDate.toISOString().split("T")[0]
         const ed = booking.endDate.toISOString().split("T")[0]
-        // REVISIT THESE ERRORS - may be a little bit too judicious
         if(
             startDate === sd
             || startDate === ed
