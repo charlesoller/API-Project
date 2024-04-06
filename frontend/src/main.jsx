@@ -7,7 +7,6 @@ import configureStore from './store';
 import { restoreCSRF, csrfFetch } from './store/csrf';
 
 const store = configureStore();
-
 if (import.meta.env.MODE !== 'production') {
   restoreCSRF();
 
