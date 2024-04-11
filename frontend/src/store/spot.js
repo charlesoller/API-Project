@@ -1,7 +1,8 @@
-import { getAllSpots } from "../util/api";
+import { getAllSpots, getSpotDetailsById } from "../util/api";
 
 // ======================== Action Constants ========================
-const LOAD_ALL_SPOTS = "spot/getAllSpots"
+const LOAD_ALL_SPOTS = "spot/loadAllSpots"
+const LOAD_SPOT_BY_ID = "spot/loadSpotById"
 
 // ======================== Action Creators ========================
 const loadAllSpots = (spots) => {
@@ -11,11 +12,23 @@ const loadAllSpots = (spots) => {
     }
 }
 
+const loadSpotById = (spot) => {
+  return {
+    type: LOAD_SPOT_BY_ID,
+    payload: spot
+  }
+}
+
 // ======================== Thunk Action Creators ========================
 export const fetchSpotsThunk = () => async (dispatch) => {
     const res = await getAllSpots()
     dispatch(loadAllSpots(res.Spots));
 };
+
+export const fetchSpotDetailsThunk = (id) => async (dispatch) => {
+  const res = await getSpotDetailsById(id)
+  dispatch(loadSpotById(res))
+}
 
 // ======================== Reducer ========================
 export const spotReducer = (state = {}, action) => {
@@ -26,6 +39,9 @@ export const spotReducer = (state = {}, action) => {
           spotsState[spot.id] = spot;
         });
         return spotsState;
+      }
+      case LOAD_SPOT_BY_ID: {
+        return { ...state, [action.payload.id]: action.payload}
       }
     //   case RECEIVE_REPORT:
     //     return { ...state, [action.report.id]: action.report };

@@ -9,6 +9,11 @@ export const getAllSpots = async() => {
     }
 }
 
-// export const getImagesBySpotId = async(id) => {
-
-// }
+export const getSpotDetailsById = async(id) => {
+    try {
+        const res = await csrfFetch(`/api/spots/${id}`).then(res => res.json())
+        return res
+    } catch (e) {
+        throw new Error("Unable to fetch.")
+    }
+}
