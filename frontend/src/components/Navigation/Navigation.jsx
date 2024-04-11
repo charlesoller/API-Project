@@ -14,7 +14,7 @@ function Navigation({ isLoaded }) {
         <li className={styles.left}>
           <NavLink to="/" className={styles.home}>
             <img src='https://seeklogo.com/images/A/airbnb-logo-1D03C48906-seeklogo.com.png' className={styles.logo} />
-            <h1 className={styles.text}>housebnb</h1>
+            <h1 className={styles.text}>spotbnb</h1>
           </NavLink>
         </li>
         {isLoaded && (
