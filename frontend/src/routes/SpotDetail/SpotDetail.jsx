@@ -1,7 +1,7 @@
 import styles from "./SpotDetail.module.css"
 import { useLocation } from 'react-router-dom'
 import { FaStar } from "react-icons/fa"
-import { Review } from "../../components"
+import { Review, ReserveSpotCard } from "../../components"
 
 export default function SpotDetail(){
     const location = useLocation()
@@ -28,14 +28,17 @@ export default function SpotDetail(){
                 </div>
             </section>
 
-            <section className={styles.info}>
-                <h3 className={styles.host}>Hosted by Firstname Lastname</h3>
-                {/* Need to implement host fetch above */}
+            <section className={styles.spot_info}>
+                <div className={styles.info}>
+                    <h3 className={styles.host}>Hosted by Firstname Lastname</h3>
+                    {/* Need to implement host fetch above */}
 
-                <p className={styles.description}>{description}</p>
+                    <p className={styles.description}>{description}</p>
+                </div>
+
+                <ReserveSpotCard price={price} avgRating={avgRating} numReviews={3}/>
+                {/* Update above with proper review data */}
             </section>
-
-            <br className={styles.break}/>
 
             <section>
                 <h3> <FaStar /> { avgRating } | # Reviews</h3>

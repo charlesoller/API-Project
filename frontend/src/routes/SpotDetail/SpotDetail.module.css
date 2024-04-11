@@ -48,20 +48,22 @@ img {
     border-radius: 1em;
 }
 
-.info {
+.spot_info {
+    display: flex;
+    justify-content: space-between;
     margin-top: 2em;
+    padding-bottom: 2em;
+    border-bottom: solid 1px black;
+}
+
+.info {
     display: flex;
     flex-direction: column;
     gap: 1em;
-    padding-bottom: 2em;
-    border-bottom: solid 1px black;
 }
 
 .host {
     font-weight: 500;
     font-size: 1.7rem;
 
-}
-
-.break {
 }
