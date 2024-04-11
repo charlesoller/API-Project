@@ -1,2 +1,3 @@
 import Landing from "./Landing/Landing";
-export { Landing }
+import SpotDetail from "./SpotDetail/SpotDetail";
+export { Landing, SpotDetail }
