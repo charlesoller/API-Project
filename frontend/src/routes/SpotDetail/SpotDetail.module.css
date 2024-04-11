@@ -41,7 +41,6 @@ img {
 }
 
 .grid_image {
-    background: red;
     height: 100%;
     object-fit: cover;
     object-position:/ center;
@@ -65,5 +64,14 @@ img {
 .host {
     font-weight: 500;
     font-size: 1.7rem;
+}
 
+.review_header {
+    margin: 1em 0;
+}
+
+.review_elements {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }

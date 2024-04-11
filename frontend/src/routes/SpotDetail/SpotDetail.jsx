@@ -4,6 +4,7 @@ import { FaStar } from "react-icons/fa"
 import { Review, ReserveSpotCard } from "../../components"
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSpotDetailsThunk } from "../../store/spot";
+import { fetchReviewsBySpotIdThunk } from "../../store/review";
 import { useEffect, useState } from "react";
 import { capitalize } from "../../util/helper";
 
@@ -13,12 +14,15 @@ export default function SpotDetail(){
     const { name, city, state, country, previewImage, ownerId, price, description, avgRating, id } = location.state
 
     const spot = useSelector(state => state.spot[id])
+    const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === id)
 
-    // const { firstName: ownerFirst, lastName: ownerLast } = spot.Owner
-    // const { numReviews } = spot
-    console.log(spot)
+    const reviewElements = reviews.map(review => {
+        return <Review review={review} />
+    })
+
     useEffect(() => {
         dispatch(fetchSpotDetailsThunk(id))
+        dispatch(fetchReviewsBySpotIdThunk(id))
     }, [ dispatch ])
 
     return (
@@ -56,9 +60,11 @@ export default function SpotDetail(){
                 </section>
 
                 <section>
-                    <h3> <FaStar /> { avgRating } • { spot.numReviews } Reviews</h3>
+                    <h3 className={styles.review_header}> <FaStar /> { avgRating } • { spot.numReviews } Reviews</h3>
                     {/* This still needs the review data */}
-                    <Review name={spot.Owner.firstName} />
+                    <div className={styles.review_elements}>
+                        { reviewElements }
+                    </div>
                 </section>
             </main>
         )
