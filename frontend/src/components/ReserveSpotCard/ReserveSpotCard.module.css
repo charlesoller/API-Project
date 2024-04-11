@@ -29,6 +29,12 @@
     width: 100%;
     border-radius: 1em;
     padding: 1em;
+    transition: all 0.1s ease-in-out;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
 }
 
 .review_info > h3 {
