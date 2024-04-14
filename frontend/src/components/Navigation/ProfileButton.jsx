@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { FaUserCircle } from 'react-icons/fa';
+import { HiMenu } from "react-icons/hi";
 import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
+
+import styles from "./ProfileButton.module.css"
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
@@ -42,7 +45,8 @@ function ProfileButton({ user }) {
 
   return (
     <>
-      <button onClick={toggleMenu}>
+      <button onClick={toggleMenu} className={styles.icons}>
+        <HiMenu />
         <FaUserCircle />
       </button>
       <ul className={ulClassName} ref={ulRef}>
@@ -56,7 +60,7 @@ function ProfileButton({ user }) {
             </li>
           </>
         ) : (
-          <>
+          <div className={styles.no_user}>
             <OpenModalMenuItem
               itemText="Log In"
               onItemClick={closeMenu}
@@ -67,7 +71,7 @@ function ProfileButton({ user }) {
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />
-          </>
+          </div>
         )}
       </ul>
     </>
