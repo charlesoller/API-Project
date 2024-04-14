@@ -11,7 +11,7 @@ import { capitalize } from "../../util/helper";
 export default function SpotDetail(){
     const dispatch = useDispatch()
     const location = useLocation()
-    const { name, city, state, country, previewImage, ownerId, price, description, avgRating, id } = location.state
+    const { name, city, state, country, previewImage, price, description, avgRating, id } = location.state
 
     const spot = useSelector(state => state.spot[id])
     const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === id)
