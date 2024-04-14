@@ -6,10 +6,11 @@ import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
-
+import { useNavigate } from "react-router-dom";
 import styles from "./ProfileButton.module.css"
 
 function ProfileButton({ user }) {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
@@ -38,6 +39,7 @@ function ProfileButton({ user }) {
   const logout = (e) => {
     e.preventDefault();
     dispatch(sessionActions.logout());
+    navigate("/")
     closeMenu();
   };
 
@@ -51,16 +53,17 @@ function ProfileButton({ user }) {
       </button>
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
-          <>
-            <li>{user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
-            <li>{user.email}</li>
-            <li>
+          <div className={styles.menu}>
+            <div className={styles.user_info}>
+              <li className={styles.name}>Hello, {user.firstName}</li>
+              <li className={styles.email}>{user.email}</li>
+            </div>
+            <li className={styles.logout}>
               <button onClick={logout}>Log Out</button>
             </li>
-          </>
+          </div>
         ) : (
-          <div className={styles.no_user}>
+          <div className={styles.menu}>
             <OpenModalMenuItem
               itemText="Log In"
               onItemClick={closeMenu}
