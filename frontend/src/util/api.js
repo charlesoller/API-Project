@@ -5,6 +5,7 @@ import { csrfFetch } from "../store/csrf"
 export const getAllSpots = async() => {
     try {
         const res = await csrfFetch('/api/spots').then(res => res.json())
+        console.log(res)
         return res
     } catch (e) {
         throw new Error("Unable to fetch.")
@@ -13,10 +14,61 @@ export const getAllSpots = async() => {
 
 export const getSpotDetailsById = async(id) => {
     try {
-        const res = await csrfFetch(`/api/spots/${id}`).then(res => res.json())
+        const res = await csrfFetch(`/api/spots/${id}`)
+            .then(res => res.json())
         return res
     } catch (e) {
+        console.log(e)
         throw new Error("Unable to fetch.")
+    }
+}
+
+export const createSpot = async(spot) => {
+    console.log("IN API FUNCTION")
+    console.log("THE SUBMITTED SPOT: ", spot)
+    try {
+        const res = await csrfFetch("/api/spots", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(spot)
+        }).then(res => res.json())
+        return res
+    } catch(e) {
+        // DEBUG LINE BELOW
+        console.log(e)
+        throw new Error("Unable to create spot.")
+    }
+    // export const createReportThunk = (report, navigate) => async (dispatch) => {
+    //     const res = await fetch("/api/reports", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json"
+    //       },
+    //       body: JSON.stringify(report)
+    //     })
+    //     const { id } = await res.json()
+    //     if(res.ok){
+    //       navigate(`/reports/${id}`)
+    //     }
+    //   }
+}
+
+export const createImageBasedOnSpotId = async(img, id) => {
+    try {
+        const res = await csrfFetch(`/api/spots/${id}/images`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(img)
+        }).then(res => res.json())
+        return res
+    } catch(e) {
+        // DEBUG LINE BELOW
+        console.log(e)
+        throw new Error("Unable to create spot.")
     }
 }
 

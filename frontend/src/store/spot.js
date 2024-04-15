@@ -1,8 +1,9 @@
-import { getAllSpots, getSpotDetailsById } from "../util/api";
+import { createImageBasedOnSpotId, createSpot, getAllSpots, getSpotDetailsById } from "../util/api";
 
 // ======================== Action Constants ========================
 const LOAD_ALL_SPOTS = "spot/loadAllSpots"
 const LOAD_SPOT_BY_ID = "spot/loadSpotById"
+// const RECEIVE_SPOT = "spot/receiveSpot"
 
 // ======================== Action Creators ========================
 const loadAllSpots = (spots) => {
@@ -19,6 +20,13 @@ const loadSpotById = (spot) => {
   }
 }
 
+// const receiveSpot = (spot) => {
+//   return {
+//     type: RECEIVE_SPOT,
+//     payload: spot
+//   }
+// }
+
 // ======================== Thunk Action Creators ========================
 export const fetchSpotsThunk = () => async (dispatch) => {
     const res = await getAllSpots()
@@ -29,6 +37,34 @@ export const fetchSpotDetailsThunk = (id) => async (dispatch) => {
   const res = await getSpotDetailsById(id)
   dispatch(loadSpotById(res))
 }
+
+export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
+  console.log("IN THUNK")
+  const res = await createSpot(spot);
+
+  // After creating the spot, we create the images for the spot
+  const images = await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
+  // The images are filtered down to only the preview image. There will only be one preview image, so it is selected here.
+  const previewImage = images.filter(image => image.preview === true)[0]
+  
+  dispatch(loadSpotById(res))
+  // The spot as well as the preview images url is passed along
+  navigate(`/spots/${res.id}`, { state: { ...res, previewImage: previewImage.url }})
+}
+
+// export const createReportThunk = (report, navigate) => async (dispatch) => {
+//   const res = await fetch("/api/reports", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json"
+//     },
+//     body: JSON.stringify(report)
+//   })
+//   const { id } = await res.json()
+//   if(res.ok){
+//     navigate(`/reports/${id}`)
+//   }
+// }
 
 // ======================== Reducer ========================
 export const spotReducer = (state = {}, action) => {
