@@ -1,3 +1,4 @@
 import Landing from "./Landing/Landing";
 import SpotDetail from "./SpotDetail/SpotDetail";
-export { Landing, SpotDetail }
+import CreateSpot from "./CreateSpot/CreateSpot";
+export { Landing, SpotDetail, CreateSpot }
