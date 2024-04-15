@@ -6,7 +6,7 @@ import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./ProfileButton.module.css"
 
 function ProfileButton({ user }) {
@@ -57,6 +57,10 @@ function ProfileButton({ user }) {
             <div className={styles.user_info}>
               <li className={styles.name}>Hello, {user.firstName}</li>
               <li className={styles.email}>{user.email}</li>
+            </div>
+            <div className={styles.user_actions}>
+              <Link to="/" className={styles.user_action}>Create a New Spot</Link>
+              <Link to="/" className={styles.user_action}>Manage Spots</Link>
             </div>
             <li className={styles.logout}>
               <button onClick={logout}>Log Out</button>
