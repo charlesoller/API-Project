@@ -121,7 +121,8 @@ router.get("/", async(req, res) => {
         }
     }
     //===================================================
-
+    // let test = await Spot.findAll()
+    // console.log(test)
     let spots = await Spot.findAll({
         // raw: true,
         //The inclusion of all attributes as seen below is necessary for getting rid of the model name of SpotImages in the response
@@ -142,6 +143,9 @@ router.get("/", async(req, res) => {
             attributes: ['url']
         },
     });
+
+    // console.log("SPOTS: ", spots)
+
     // REPLACE CODE BELOW EVENTUALLY
     for(let i = 0; i < spots.length; i++){
         const url = spots[i].dataValues.SpotImages[0].dataValues.url
@@ -307,10 +311,15 @@ router.post("/", async(req, res) => {
     }
 
     try {
+        console.log("TEST")
+        console.log(id)
+        console.log(address, city, state, country, lat, lng, name, description, price)
         let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
+        console.log("BACKEND SPOT: ", spot)
         spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
+        console.log(e)
         const err = { message: "Bad Request" }
         const errors = {}
         e.errors.forEach(error => {
