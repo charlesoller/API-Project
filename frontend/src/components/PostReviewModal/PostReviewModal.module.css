@@ -1,0 +1,52 @@
+.modal {
+    padding: 2em;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.header {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+.star_section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.star {
+    font-size: 1.8rem;
+    cursor: pointer;
+    /* background: black; */
+}
+
+.stars_text {
+    margin-left: 0.4em;
+}
+
+.button {
+    background: #fd5c63;
+    color: white;
+    font-weight: 500;
+    width: 100%;
+    border-radius: 1em;
+    padding: 1em;
+    transition: all 0.1s ease-in-out;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
+}
+
+.button:disabled {
+    background: lightgray;
+    transform: scale(1);
+    cursor: not-allowed;
+}
