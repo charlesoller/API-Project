@@ -79,6 +79,6 @@ export const getReviewsBySpotId = async(id) => {
         const res = await csrfFetch(`/api/spots/${id}/reviews`).then(res => res.json())
         return res
     } catch (e) {
-        throw new Error("Unable to fetch.")
+        throw new Error(e.message)
     }
 }

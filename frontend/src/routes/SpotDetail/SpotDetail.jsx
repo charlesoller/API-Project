@@ -11,20 +11,9 @@ import { capitalize } from "../../util/helper";
 export default function SpotDetail(){
     const dispatch = useDispatch()
     const location = useLocation()
-    // const { id } = useParams()
-    // console.log("ID: ", id)
-    // Have to figure out what's going on below.
-    // const [ queryParameters ] = useSearchParams()
-    // const id = 4
+
     const { name, city, state, country, price, description, avgRating, id, previewImage } = location.state
-    // console.log(location.state)
     const spot = useSelector(state => state.spot[id])
-    console.log("SPOT: ", spot)
-    // const previewImage = spot?.SpotImages.filter(image => image.preview === true)[0].url
-    // console.log(previewImage)
-    // console.log(spot.SpotImages)
-    // console.log(spot)
-    // const { name, city, state, country, previewImage, price, description, avgRating, id } = spot
 
     const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === id)
 
@@ -34,11 +23,16 @@ export default function SpotDetail(){
 
     useEffect(() => {
         dispatch(fetchSpotDetailsThunk(id))
-        // dispatch(fetchReviewsBySpotIdThunk(id))
+        try {
+            dispatch(fetchReviewsBySpotIdThunk(id))
+        } catch (e) {
+            console.log("HERE")
+            console.log(e.message)
+        }
     }, [ dispatch ])
 
     return (
-        spot?.Owner && spot.numReviews && spot.SpotImages ?
+        spot?.Owner && spot.SpotImages ? // This line of code is sloppy. I think that really, spot should be held in state and updated after the running of the useEffect.
         (
             <main className={styles.container}>
                 <section className={styles.title_info}>
@@ -72,7 +66,7 @@ export default function SpotDetail(){
                 </section>
 
                 <section>
-                    <h3 className={styles.review_header}> <FaStar /> { avgRating } • { spot.numReviews } Reviews</h3>
+                    <h3 className={styles.review_header}> <FaStar /> { avgRating } • { spot.numReviews ? spot.numReviews + " Reviews": "New" }</h3>
                     <div className={styles.review_elements}>
                         { reviewElements }
                     </div>

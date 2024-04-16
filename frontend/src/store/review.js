@@ -29,8 +29,12 @@ const loadReviewsBySpotId = (reviews) => {
 // ======================== Thunk Action Creators ========================
 
 export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
-    const res = await getReviewsBySpotId(id)
-    dispatch(loadReviewsBySpotId(res))
+    try {
+      const res = await getReviewsBySpotId(id)
+      dispatch(loadReviewsBySpotId(res))
+    } catch (e) {
+      throw new Error(e.message)
+    }
   }
 
 // ======================== Reducer ========================
@@ -47,11 +51,15 @@ export const reviewReducer = (state = {}, action) => {
     //     return { ...state, [action.payload.id]: action.payload}
     //   }
       case LOAD_REVIEWS_BY_SPOT_ID: {
-        const newReviews = {};
-        action.payload.Reviews.forEach((review) => {
-            newReviews[review.id] = review;
-        })
-        return { ...state, ...newReviews}
+        try{
+          const newReviews = {};
+          action.payload.Reviews.forEach((review) => {
+              newReviews[review.id] = review;
+          })
+          return { ...state, ...newReviews}
+        } catch (e) {
+          throw new Error(e.message)
+        }
       }
     //   case RECEIVE_REPORT:
     //     return { ...state, [action.report.id]: action.report };
