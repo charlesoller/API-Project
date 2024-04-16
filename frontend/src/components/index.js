@@ -5,6 +5,7 @@ import SignupFormModal from "./SignupFormModal/SignupFormModal";
 import SpotCard from "./SpotCard/SpotCard";
 import Review from "./Review/Review";
 import ReserveSpotCard from "./ReserveSpotCard/ReserveSpotCard";
+import PostReviewModal from "./PostReviewModal/PostReviewModal";
 export {
     LoginFormModal,
     Navigation,
@@ -12,5 +13,6 @@ export {
     SignupFormModal,
     SpotCard,
     Review,
-    ReserveSpotCard
+    ReserveSpotCard,
+    PostReviewModal
 }
