@@ -1,7 +1,5 @@
 .container {
-    /* width: 25%;
-    height: 25%; */
-    height: 50vh;
+    height: 60vh;
     border-radius: 1em;
     border: solid 1px lightgray;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -16,8 +14,6 @@
 }
 
 .image_container {
-    /* height: 400px;
-    background: blue; */
     height: 100%;
     width: 100%;
     position: relative;
@@ -34,13 +30,18 @@
     margin: 0;
 }
 
+.content {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .info {
-    padding: 0 1em;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0;
-    /* padding: 0; */
+    margin-top: 0.5em;
 }
 
 .rating {
@@ -57,4 +58,26 @@
 
 .price {
     font-size: 0.9rem;
+}
+
+.user_options {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 0.7em;
+}
+
+.button {
+    color: white;
+    font-size: 0.7rem;
+    border-radius: 0.5em;
+    background: #fd5c63;
+    padding: 0.8em 1.5em;
+    transition: all 0.1s ease-in-out;
+    width: fit-content;
+    margin-bottom: 2em;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
 }

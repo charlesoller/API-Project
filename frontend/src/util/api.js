@@ -18,8 +18,17 @@ export const getSpotDetailsById = async(id) => {
             .then(res => res.json())
         return res
     } catch (e) {
-        console.log(e)
         throw new Error("Unable to fetch.")
+    }
+}
+
+export const getCurrentUserSpots = async() => {
+    try {
+        const res = await csrfFetch('/api/spots/current')
+            .then(res => res.json())
+        return res
+    } catch (e) {
+        throw new Error("Unable to current user's spots fetch.")
     }
 }
 
@@ -40,19 +49,6 @@ export const createSpot = async(spot) => {
         // console.log(e)
         throw new Error("Unable to create spot.")
     }
-    // export const createReportThunk = (report, navigate) => async (dispatch) => {
-    //     const res = await fetch("/api/reports", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json"
-    //       },
-    //       body: JSON.stringify(report)
-    //     })
-    //     const { id } = await res.json()
-    //     if(res.ok){
-    //       navigate(`/reports/${id}`)
-    //     }
-    //   }
 }
 
 export const createImageBasedOnSpotId = async(img, id) => {

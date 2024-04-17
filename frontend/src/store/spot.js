@@ -1,8 +1,9 @@
-import { createImageBasedOnSpotId, createSpot, getAllSpots, getSpotDetailsById } from "../util/api";
+import { createImageBasedOnSpotId, createSpot, getAllSpots, getCurrentUserSpots, getSpotDetailsById } from "../util/api";
 
 // ======================== Action Constants ========================
 const LOAD_ALL_SPOTS = "spot/loadAllSpots"
 const LOAD_SPOT_BY_ID = "spot/loadSpotById"
+const LOAD_SPOTS = "spot/loadSpots"
 // const RECEIVE_SPOT = "spot/receiveSpot"
 
 // ======================== Action Creators ========================
@@ -17,6 +18,13 @@ const loadSpotById = (spot) => {
   return {
     type: LOAD_SPOT_BY_ID,
     payload: spot
+  }
+}
+
+const loadSpots = spots => {
+  return {
+    type: LOAD_SPOTS,
+    payload: spots
   }
 }
 
@@ -36,6 +44,11 @@ export const fetchSpotsThunk = () => async (dispatch) => {
 export const fetchSpotDetailsThunk = (id) => async (dispatch) => {
   const res = await getSpotDetailsById(id)
   dispatch(loadSpotById(res))
+}
+
+export const fetchCurrentUserSpotsThunk = () => async (dispatch) => {
+  const res = await getCurrentUserSpots()
+  dispatch(loadSpots(res.Spots))
 }
 
 export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
@@ -78,6 +91,13 @@ export const spotReducer = (state = {}, action) => {
       }
       case LOAD_SPOT_BY_ID: {
         return { ...state, [action.payload.id]: action.payload}
+      }
+      case LOAD_SPOTS: {
+        const newSpots = {}
+        action.payload.forEach((spot) => {
+          newSpots[spot.id] = spot;
+        })
+        return { ...state, ...newSpots }
       }
     //   case RECEIVE_REPORT:
     //     return { ...state, [action.report.id]: action.report };

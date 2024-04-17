@@ -16,7 +16,8 @@ export default function SpotDetail(){
     // const { name, city, state, country, price, description, avgRating, id, previewImage } = location.state
     const spot = useSelector(state => state.spot[id])
     const user = useSelector(state => state.session.user)
-    const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === Number(id)).reverse()
+    const reviews = useSelector(state => Object.values(state.review))
+        .filter(review => review.spotId === Number(id)).reverse()
     const previewImage = spot?.SpotImages?.filter(image => image.preview === true)[0].url
     const reviewElements = reviews.map(review => {
         return <Review key={review.id} review={review} />
