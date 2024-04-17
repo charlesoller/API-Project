@@ -10,7 +10,6 @@ import { capitalize } from "../../util/helper";
 
 export default function SpotDetail(){
     const dispatch = useDispatch()
-    // const location = useLocation()
     const { id } = useParams()
 
     // const { name, city, state, country, price, description, avgRating, id, previewImage } = location.state

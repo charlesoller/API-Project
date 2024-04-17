@@ -51,6 +51,23 @@ export const createSpot = async(spot) => {
     }
 }
 
+export const updateSpot = async(spot, id) => {
+    try {
+        const res = await csrfFetch(`/api/spots/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(spot)
+        }).then(res => res.json())
+        return res
+    } catch(e) {
+        // DEBUG LINE BELOW
+        // console.log(e)
+        throw new Error("Unable to updaet spot.")
+    }
+}
+
 export const createImageBasedOnSpotId = async(img, id) => {
     try {
         const res = await csrfFetch(`/api/spots/${id}/images`, {

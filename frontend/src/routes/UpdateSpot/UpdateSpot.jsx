@@ -1,18 +1,16 @@
 import styles from "./UpdateSpot.module.css"
 
-import { useState, useEffect } from "react"
-import { createSpotThunk } from "../../store/spot"
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { fetchSpotDetailsThunk } from "../../store/spot";
+import { useState } from "react"
+import { updateSpotThunk } from "../../store/spot"
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 export default function UpdateSpot(){
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const { id } = useParams()
-    const spot = useSelector(state => state.spot[id])
-
     const { state: data } = useLocation()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { id } = useParams()
+
     const [ country, setCountry ] = useState(data.country)
     const [ address, setAddress ] = useState(data.address)
     const [ city, setCity ] = useState(data.city)
@@ -22,21 +20,17 @@ export default function UpdateSpot(){
     const [ description, setDescription ] = useState(data.description)
     const [ name, setName ] = useState(data.name)
     const [ price, setPrice ] = useState(data.price)
-    const [ previewImage, setPreviewImage ] = useState(data.previewImage)
-    const [ image1, setImage1 ] = useState("")
-    const [ image2, setImage2 ] = useState("")
-    const [ image3, setImage3 ] = useState("")
-    const [ image4, setImage4 ] = useState("")
+    // const [ previewImage, setPreviewImage ] = useState(data.previewImage)
+    // const [ image1, setImage1 ] = useState("")
+    // const [ image2, setImage2 ] = useState("")
+    // const [ image3, setImage3 ] = useState("")
+    // const [ image4, setImage4 ] = useState("")
     const [ errors, setErrors ] = useState({})
-
-    useEffect(() => {
-        dispatch(fetchSpotDetailsThunk(id))
-    }, [ dispatch, id ])
 
     const handleSubmit = (e) => {
         e.preventDefault()
         const err = {}
-        const imgs = []
+        // const imgs = []
 
         if(!country.length){
             err.country = "Country is required"
@@ -65,33 +59,33 @@ export default function UpdateSpot(){
         if(!price){
             err.price = "Price is required"
         }
-        if(!previewImage.length){
-            err.previewImage = "Preview Image is required"
-        }
+        // if(!previewImage.length){
+        //     err.previewImage = "Preview Image is required"
+        // }
 
         setErrors(err)
 
         // IF NO ERRORS
         if(!Object.keys(err).length){
-            imgs.push({ url: previewImage, preview: true })
-            if(image1){
-                imgs.push({ url: image1, preview: false })
-            }
-            if(image2){
-                imgs.push({ url: image2, preview: false })
-            }
-            if(image3){
-                imgs.push({ url: image3, preview: false })
-            }
-            if(image4){
-                imgs.push({ url: image4, preview: false })
-            }
+        //     imgs.push({ url: previewImage, preview: true })
+        //     if(image1){
+        //         imgs.push({ url: image1, preview: false })
+        //     }
+        //     if(image2){
+        //         imgs.push({ url: image2, preview: false })
+        //     }
+        //     if(image3){
+        //         imgs.push({ url: image3, preview: false })
+        //     }
+        //     if(image4){
+        //         imgs.push({ url: image4, preview: false })
+        //     }
 
             const spot = {
                 address, city, state, country, lat, lng, name, description, price
             }
 
-            
+            dispatch(updateSpotThunk(spot, id, navigate))
             // dispatch(createSpotThunk(spot, imgs, navigate))
         }
     }
@@ -236,7 +230,7 @@ export default function UpdateSpot(){
                     </label>
                 </div>
 
-                <div className={styles.section}>
+                {/* <div className={styles.section}>
                     <h3 className={styles.subtitle}>Liven up your spot with photos</h3>
                     <h6 className={styles.title_description}>Submit a link to at least one photo to publish your spot.</h6>
                     <label className={styles.input_group}>
@@ -293,10 +287,10 @@ export default function UpdateSpot(){
                             className={styles.input}
                         />
                         { errors.image4 && <p className={styles.error}>{errors.image4}</p> }
-                    </label>
-                </div>
+                    </label> */}
+                {/* </div> */}
 
-                <button type="submit" className={styles.button}>Create Spot</button>
+                <button type="submit" className={styles.button}>Update Your Spot</button>
             </form>
 
         </main>

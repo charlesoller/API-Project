@@ -1,4 +1,4 @@
-import { createImageBasedOnSpotId, createSpot, getAllSpots, getCurrentUserSpots, getSpotDetailsById } from "../util/api";
+import { createImageBasedOnSpotId, createSpot, getAllSpots, getCurrentUserSpots, getSpotDetailsById, updateSpot } from "../util/api";
 
 // ======================== Action Constants ========================
 const LOAD_ALL_SPOTS = "spot/loadAllSpots"
@@ -57,12 +57,16 @@ export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
 
   // After creating the spot, we create the images for the spot
   const images = await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
-  // The images are filtered down to only the preview image. There will only be one preview image, so it is selected here.
-  const previewImage = images.filter(image => image.preview === true)[0]
 
   dispatch(loadSpotById(res))
   // The spot as well as the preview images url is passed along
-  navigate(`/spots/${res.id}`, { state: { ...res, previewImage: previewImage.url }})
+  navigate(`/spots/${res.id}`)
+}
+
+export const updateSpotThunk = (spot, id, navigate) => async(dispatch) => {
+  const res = await updateSpot(spot, id)
+  dispatch(loadSpotById(res))
+  navigate(`/spots/${res.id}`)
 }
 
 // export const createReportThunk = (report, navigate) => async (dispatch) => {
