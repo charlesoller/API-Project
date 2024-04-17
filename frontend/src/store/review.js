@@ -1,29 +1,24 @@
-import { getReviewsBySpotId } from "../util/api"
+import { createReviewBasedOnSpotId, getReviewsBySpotId } from "../util/api"
 
 // ======================== Action Constants ========================
 
 const LOAD_REVIEWS_BY_SPOT_ID = "review/loadReviewsBySpotId"
+const LOAD_REVIEW = "review/loadReview"
 
 // ======================== Action Creators ========================
-const loadAllSpots = (spots) => {
-    return {
-        type: LOAD_ALL_SPOTS,
-        payload: spots
-    }
-}
-
-const loadSpotById = (spot) => {
-  return {
-    type: LOAD_SPOT_BY_ID,
-    payload: spot
-  }
-}
 
 const loadReviewsBySpotId = (reviews) => {
     return {
         type: LOAD_REVIEWS_BY_SPOT_ID,
         payload: reviews
     }
+}
+
+const loadReview = (review) => {
+  return {
+    type: LOAD_REVIEW,
+    payload: review
+  }
 }
 
 // ======================== Thunk Action Creators ========================
@@ -36,6 +31,15 @@ export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
       throw new Error(e.message)
     }
   }
+
+export const createReviewThunk = (review, id) => async(dispatch) => {
+  try {
+    const res = await createReviewBasedOnSpotId(review, id)
+    dispatch(loadReview(res))
+  } catch (e) {
+    throw new Error(e.message)
+  }
+}
 
 // ======================== Reducer ========================
 export const reviewReducer = (state = {}, action) => {
@@ -57,6 +61,14 @@ export const reviewReducer = (state = {}, action) => {
               newReviews[review.id] = review;
           })
           return { ...state, ...newReviews}
+        } catch (e) {
+          throw new Error(e.message)
+        }
+      }
+      case LOAD_REVIEW: {
+        console.log(action.payload)
+        try {
+          return { ...state, [action.payload.id]: action.payload}
         } catch (e) {
           throw new Error(e.message)
         }

@@ -39,14 +39,14 @@ export const fetchSpotDetailsThunk = (id) => async (dispatch) => {
 }
 
 export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
-  console.log("IN THUNK")
+  // console.log("IN THUNK")
   const res = await createSpot(spot);
 
   // After creating the spot, we create the images for the spot
   const images = await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
   // The images are filtered down to only the preview image. There will only be one preview image, so it is selected here.
   const previewImage = images.filter(image => image.preview === true)[0]
-  
+
   dispatch(loadSpotById(res))
   // The spot as well as the preview images url is passed along
   navigate(`/spots/${res.id}`, { state: { ...res, previewImage: previewImage.url }})

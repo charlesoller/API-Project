@@ -24,8 +24,8 @@ export const getSpotDetailsById = async(id) => {
 }
 
 export const createSpot = async(spot) => {
-    console.log("IN API FUNCTION")
-    console.log("THE SUBMITTED SPOT: ", spot)
+    // console.log("IN API FUNCTION")
+    // console.log("THE SUBMITTED SPOT: ", spot)
     try {
         const res = await csrfFetch("/api/spots", {
             method: "POST",
@@ -37,7 +37,7 @@ export const createSpot = async(spot) => {
         return res
     } catch(e) {
         // DEBUG LINE BELOW
-        console.log(e)
+        // console.log(e)
         throw new Error("Unable to create spot.")
     }
     // export const createReportThunk = (report, navigate) => async (dispatch) => {
@@ -66,8 +66,6 @@ export const createImageBasedOnSpotId = async(img, id) => {
         }).then(res => res.json())
         return res
     } catch(e) {
-        // DEBUG LINE BELOW
-        console.log(e)
         throw new Error("Unable to create spot.")
     }
 }
@@ -80,5 +78,20 @@ export const getReviewsBySpotId = async(id) => {
         return res
     } catch (e) {
         throw new Error(e.message)
+    }
+}
+
+export const createReviewBasedOnSpotId = async(review, id) => {
+    try {
+        const res = await csrfFetch(`/api/spots/${id}/reviews`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(review)
+        }).then(res => res.json())
+        return res
+    } catch (e) {
+        throw new Error("Unable to create review.")
     }
 }

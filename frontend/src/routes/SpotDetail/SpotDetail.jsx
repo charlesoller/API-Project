@@ -10,15 +10,16 @@ import { capitalize } from "../../util/helper";
 
 export default function SpotDetail(){
     const dispatch = useDispatch()
-    const location = useLocation()
+    // const location = useLocation()
+    const { id } = useParams()
 
-    const { name, city, state, country, price, description, avgRating, id, previewImage } = location.state
+    // const { name, city, state, country, price, description, avgRating, id, previewImage } = location.state
     const spot = useSelector(state => state.spot[id])
     const user = useSelector(state => state.session.user)
-    const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === id)
-
+    const reviews = useSelector(state => Object.values(state.review)).filter(review => review.spotId === Number(id)).reverse()
+    const previewImage = spot?.SpotImages?.filter(image => image.preview === true)[0].url
     const reviewElements = reviews.map(review => {
-        return <Review review={review} />
+        return <Review key={review.id} review={review} />
     })
 
     const hasNotReviewed = () => {
@@ -30,8 +31,8 @@ export default function SpotDetail(){
         try {
             dispatch(fetchReviewsBySpotIdThunk(id))
         } catch (e) {
-            console.log("HERE")
-            console.log(e.message)
+            // console.log("HERE")
+            // console.log(e.message)
         }
     }, [ dispatch ])
 
@@ -40,8 +41,8 @@ export default function SpotDetail(){
         (
             <main className={styles.container}>
                 <section className={styles.title_info}>
-                    <h1>{ name }</h1>
-                    <h4>{ city }, { state }, { country }</h4>
+                    <h1>{ spot.name }</h1>
+                    <h4>{ spot.city }, { spot.state }, { spot.country }</h4>
                 </section>
 
                 <section className={styles.image_layout}>
@@ -50,9 +51,7 @@ export default function SpotDetail(){
                     </div>
 
                     <div className={styles.image_grid}>
-                        <div className={styles.test}>
-                            <img className={styles.grid_image} src={previewImage}/>
-                        </div>
+                        <img className={styles.grid_image} src={previewImage}/>
                         <img className={styles.grid_image} src={previewImage}/>
                         <img className={styles.grid_image} src={previewImage}/>
                         <img className={styles.grid_image} src={previewImage}/>
@@ -63,17 +62,20 @@ export default function SpotDetail(){
                     <div className={styles.info}>
                         <h3 className={styles.host}>Hosted by {capitalize(spot.Owner.firstName)} {capitalize(spot.Owner.lastName)}</h3>
 
-                        <p className={styles.description}>{description}</p>
+                        <p className={styles.description}>{spot.description}</p>
                     </div>
 
-                    <ReserveSpotCard price={price} avgRating={avgRating} numReviews={spot.numReviews}/>
+                    <ReserveSpotCard price={spot.price} avgRating={spot.avgStarRating} numReviews={spot.numReviews}/>
                 </section>
 
                 <section>
-                    <h3 className={styles.review_header}> <FaStar /> { avgRating } • { spot.numReviews ? spot.numReviews + " Reviews": "New" }</h3>
-                    {user && spot.Owner.id !== user.id && hasNotReviewed() && <OpenModalButton className={styles.post_review_button} modalComponent={<PostReviewModal />} buttonText="Post Your Review" />}
+                    <h3 className={styles.review_header}> <FaStar /> { spot.numReviews ? spot.avgStarRating + " • " + spot.numReviews + ( spot.numReviews === 1 ? " Review" : " Reviews" ) : "New" }</h3>
+                    {user && spot.Owner.id !== user.id && hasNotReviewed() && <OpenModalButton className={styles.post_review_button} modalComponent={<PostReviewModal id={id} />} buttonText="Post Your Review" />}
                     <div className={styles.review_elements}>
-                        { reviewElements }
+                        { reviewElements.length ?
+                            reviewElements
+                            : user && spot.Owner.id !== user.id && <h4 className={styles.be_first}>Be the first to post a review!</h4>
+                        }
                     </div>
                 </section>
             </main>

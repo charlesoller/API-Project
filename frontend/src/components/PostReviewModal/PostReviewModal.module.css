@@ -50,3 +50,7 @@
     transform: scale(1);
     cursor: not-allowed;
 }
+
+.error {
+    color: red;
+}

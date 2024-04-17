@@ -1,21 +1,31 @@
 import styles from "./PostReviewModal.module.css"
 
+import { useDispatch } from 'react-redux';
 import { FaStar, FaRegStar } from "react-icons/fa"
 import { useState } from "react"
+import { createReviewThunk } from "../../store/review";
+import { useModal } from "../../context/Modal";
 
-export default function PostReviewModal(){
+export default function PostReviewModal({ id }){
+    const dispatch = useDispatch()
     const [ review, setReview ] = useState("")
     const [ userRating, setUserRating ] = useState(0)
     const [ userHover, setUserHover ] = useState(0)
+    const [ errors, setErrors ] = useState({})
+    const { closeModal } = useModal();
 
-    const handleSubmit = () => {
-        
+    const handleSubmit = (e) => {
+        // e.preventDefault()
+        dispatch(createReviewThunk({review, stars: userRating}, id))
+            .then(closeModal)
+            .catch(err => setErrors({ message: err.message }))
     }
 
     return (
         <div className={styles.modal}>
             <h1 className={styles.header}>How was your stay?</h1>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                { errors.message && <p className={styles.error}>{errors.message}</p>}
                 <textarea
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
