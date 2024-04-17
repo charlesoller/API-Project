@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import * as sessionActions from './store/session';
 
-import { CreateSpot, Landing, SpotDetail, ManageSpots } from './routes';
+import { CreateSpot, Landing, SpotDetail, ManageSpots, UpdateSpot } from './routes';
 
 function Layout() {
   const dispatch = useDispatch();
@@ -43,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: '/spots/current',
         element: <ManageSpots />
+      },
+      {
+        path: '/spots/:id/edit',
+        element: <UpdateSpot />
       }
     ]
   }

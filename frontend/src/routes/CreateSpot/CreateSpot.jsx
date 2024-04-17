@@ -82,7 +82,6 @@ export default function CreateSpot(){
                 address, city, state, country, lat, lng, name, description, price
             }
 
-            console.log("Successfully submitted form!")
             dispatch(createSpotThunk(spot, imgs, navigate))
         }
     }

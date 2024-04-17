@@ -22,7 +22,9 @@ export default function UserSpotCard({ spot }){
                         </div>
                     </div>
                     <div className={styles.user_options}>
-                        <button className={styles.button}>Update</button>
+                        <Link to={`/spots/${id}/edit`} state={spot} className={styles.button}>
+                            Update
+                        </Link>
                         <button className={styles.button}>Delete</button>
                     </div>
                 </div>

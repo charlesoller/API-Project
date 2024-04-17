@@ -35,7 +35,7 @@ export default function SpotDetail(){
             // console.log("HERE")
             // console.log(e.message)
         }
-    }, [ dispatch ])
+    }, [ dispatch, id ])
 
     return (
         spot?.Owner && spot.SpotImages ? // This line of code is sloppy. I think that really, spot should be held in state and updated after the running of the useEffect.

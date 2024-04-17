@@ -1,24 +1,37 @@
 import styles from "./UpdateSpot.module.css"
 
+import { useState, useEffect } from "react"
+import { createSpotThunk } from "../../store/spot"
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { fetchSpotDetailsThunk } from "../../store/spot";
+
 export default function UpdateSpot(){
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { id } = useParams()
+    const spot = useSelector(state => state.spot[id])
 
-    const [ country, setCountry ] = useState("")
-    const [ address, setAddress ] = useState("")
-    const [ city, setCity ] = useState("")
-    const [ state, setState ] = useState("")
-    const [ lat, setLat ] = useState(0)
-    const [ lng, setLng ] = useState(0)
-    const [ description, setDescription ] = useState("")
-    const [ name, setName ] = useState("")
-    const [ price, setPrice ] = useState(0)
-    const [ previewImage, setPreviewImage ] = useState("")
+    const { state: data } = useLocation()
+    const [ country, setCountry ] = useState(data.country)
+    const [ address, setAddress ] = useState(data.address)
+    const [ city, setCity ] = useState(data.city)
+    const [ state, setState ] = useState(data.state)
+    const [ lat, setLat ] = useState(data.lat)
+    const [ lng, setLng ] = useState(data.lng)
+    const [ description, setDescription ] = useState(data.description)
+    const [ name, setName ] = useState(data.name)
+    const [ price, setPrice ] = useState(data.price)
+    const [ previewImage, setPreviewImage ] = useState(data.previewImage)
     const [ image1, setImage1 ] = useState("")
     const [ image2, setImage2 ] = useState("")
     const [ image3, setImage3 ] = useState("")
     const [ image4, setImage4 ] = useState("")
     const [ errors, setErrors ] = useState({})
+
+    useEffect(() => {
+        dispatch(fetchSpotDetailsThunk(id))
+    }, [ dispatch, id ])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -78,14 +91,14 @@ export default function UpdateSpot(){
                 address, city, state, country, lat, lng, name, description, price
             }
 
-            console.log("Successfully submitted form!")
-            dispatch(createSpotThunk(spot, imgs, navigate))
+            
+            // dispatch(createSpotThunk(spot, imgs, navigate))
         }
     }
 
     return (
         <main className={styles.main}>
-            <h1 className={styles.title}>Create a new Spot</h1>
+            <h1 className={styles.title}>Update your Spot</h1>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.section}>
                     <h3 className={styles.subtitle}>Where&apos;s your place located?</h3>
