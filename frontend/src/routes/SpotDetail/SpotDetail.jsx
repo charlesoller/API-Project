@@ -1,11 +1,11 @@
 import styles from "./SpotDetail.module.css"
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { FaStar } from "react-icons/fa"
 import { Review, ReserveSpotCard, OpenModalButton, PostReviewModal } from "../../components"
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSpotDetailsThunk } from "../../store/spot";
 import { fetchReviewsBySpotIdThunk } from "../../store/review";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { capitalize } from "../../util/helper";
 
 export default function SpotDetail(){
