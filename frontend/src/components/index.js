@@ -7,6 +7,7 @@ import Review from "./Review/Review";
 import ReserveSpotCard from "./ReserveSpotCard/ReserveSpotCard";
 import PostReviewModal from "./PostReviewModal/PostReviewModal";
 import UserSpotCard from "./UserSpotCard/UserSpotCard";
+import DeleteSpotModal from "./DeleteSpotModal/DeleteSpotModal";
 export {
     LoginFormModal,
     Navigation,
@@ -16,5 +17,6 @@ export {
     Review,
     ReserveSpotCard,
     PostReviewModal,
-    UserSpotCard
+    UserSpotCard,
+    DeleteSpotModal
 }

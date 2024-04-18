@@ -1,6 +1,8 @@
 import styles from "./UserSpotCard.module.css"
 import { Link } from "react-router-dom"
 import { FaStar } from "react-icons/fa"
+import OpenModalButton from "../OpenModalButton"
+import DeleteSpotModal from "../DeleteSpotModal/DeleteSpotModal"
 
 export default function UserSpotCard({ spot }){
     const { previewImage, city, state, price, avgRating, id } = spot
@@ -25,7 +27,8 @@ export default function UserSpotCard({ spot }){
                         <Link to={`/spots/${id}/edit`} state={spot} className={styles.button}>
                             Update
                         </Link>
-                        <button className={styles.button}>Delete</button>
+                        <OpenModalButton className={styles.button} buttonText="Delete" modalComponent={<DeleteSpotModal id={id} />} />
+                        {/* <button className={styles.button}>Delete</button> */}
                     </div>
                 </div>
 

@@ -1,9 +1,10 @@
-import { createImageBasedOnSpotId, createSpot, getAllSpots, getCurrentUserSpots, getSpotDetailsById, updateSpot } from "../util/api";
+import { createImageBasedOnSpotId, createSpot, deleteSpot, getAllSpots, getCurrentUserSpots, getSpotDetailsById, updateSpot } from "../util/api";
 
 // ======================== Action Constants ========================
 const LOAD_ALL_SPOTS = "spot/loadAllSpots"
 const LOAD_SPOT_BY_ID = "spot/loadSpotById"
 const LOAD_SPOTS = "spot/loadSpots"
+const DELETE_SPOT = "spot/deleteSpot"
 // const RECEIVE_SPOT = "spot/receiveSpot"
 
 // ======================== Action Creators ========================
@@ -25,6 +26,13 @@ const loadSpots = spots => {
   return {
     type: LOAD_SPOTS,
     payload: spots
+  }
+}
+
+const deleteSpotById = (id) => {
+  return {
+    type: DELETE_SPOT,
+    payload: id
   }
 }
 
@@ -69,6 +77,11 @@ export const updateSpotThunk = (spot, id, navigate) => async(dispatch) => {
   navigate(`/spots/${res.id}`)
 }
 
+export const deleteSpotThunk = (id) => async(dispatch) => {
+  const res = await deleteSpot(id)
+  dispatch(deleteSpotById(id))
+}
+
 // export const createReportThunk = (report, navigate) => async (dispatch) => {
 //   const res = await fetch("/api/reports", {
 //     method: "POST",
@@ -102,6 +115,11 @@ export const spotReducer = (state = {}, action) => {
           newSpots[spot.id] = spot;
         })
         return { ...state, ...newSpots }
+      }
+      case DELETE_SPOT: {
+        const newSpots = { ...state }
+        delete newSpots[action.payload]
+        return newSpots
       }
     //   case RECEIVE_REPORT:
     //     return { ...state, [action.report.id]: action.report };

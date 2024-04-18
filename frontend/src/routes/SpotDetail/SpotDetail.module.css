@@ -79,3 +79,18 @@ img {
     font-size: 1.2rem;
     font-weight: 500;
 }
+
+.post_review_button {
+    background: #fd5c63;
+    color: white;
+    font-weight: 500;
+    border-radius: 1em;
+    padding: 1em 2em;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 1em;
+}
+
+.post_review_button:hover,
+.post_review_button:focus {
+    transform: scale(1.02)
+}

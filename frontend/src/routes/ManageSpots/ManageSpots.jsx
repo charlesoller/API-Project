@@ -26,9 +26,14 @@ export default function ManageSpots(){
         <main className={styles.main}>
             <h1 className={styles.header}>Manage Your Spots</h1>
             <Link to="/spots/new" className={styles.button}>Create a New Spot</Link>
-            <section className={styles.grid}>
-                { spotComponents }
-            </section>
+            {
+                spots.length ?
+                <section className={styles.grid}>
+                    { spotComponents }
+                </section>
+                : <h3>You have not created any spots yet!</h3>
+            }
+
         </main>
     )
 }

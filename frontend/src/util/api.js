@@ -83,6 +83,17 @@ export const createImageBasedOnSpotId = async(img, id) => {
     }
 }
 
+export const deleteSpot = async(id) => {
+    try {
+        const res = await csrfFetch(`/api/spots/${id}`, {
+            method: "DELETE",
+        }).then(res => res.json())
+        return res
+    } catch(e) {
+        throw new Error("Unable to delete spot.")
+    }
+}
+
 // ======================== Review Routes ========================
 
 export const getReviewsBySpotId = async(id) => {
