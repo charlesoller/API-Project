@@ -119,3 +119,14 @@ export const createReviewBasedOnSpotId = async(review, id) => {
         throw new Error("Unable to create review.")
     }
 }
+
+export const deleteReview = async(id) => {
+    try {
+        const res = await csrfFetch(`/api/reviews/${id}`, {
+            method: "DELETE",
+        }).then(res => res.json())
+        return res
+    } catch(e) {
+        throw new Error("Unable to delete review.")
+    }
+}

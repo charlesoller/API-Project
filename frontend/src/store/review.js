@@ -1,9 +1,10 @@
-import { createReviewBasedOnSpotId, getReviewsBySpotId } from "../util/api"
+import { createReviewBasedOnSpotId, getReviewsBySpotId, deleteReview } from "../util/api"
 
 // ======================== Action Constants ========================
 
 const LOAD_REVIEWS_BY_SPOT_ID = "review/loadReviewsBySpotId"
 const LOAD_REVIEW = "review/loadReview"
+const DELETE_REVIEW = "review/deleteReview"
 
 // ======================== Action Creators ========================
 
@@ -21,6 +22,14 @@ const loadReview = (review) => {
   }
 }
 
+const deleteReviewById = (id) => {
+  return {
+    type: DELETE_REVIEW,
+    payload: id
+  }
+}
+
+
 // ======================== Thunk Action Creators ========================
 
 export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
@@ -35,11 +44,15 @@ export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
 export const createReviewThunk = (review, id) => async(dispatch) => {
   try {
     const res = await createReviewBasedOnSpotId(review, id)
-    console.log("THE RES: ", res)
     dispatch(loadReview(res))
   } catch (e) {
     throw new Error(e.message)
   }
+}
+
+export const deleteReviewThunk = (id) => async(dispatch) => {
+  const res = await deleteReview(id)
+  dispatch(deleteReviewById(id))
 }
 
 // ======================== Reducer ========================
@@ -73,6 +86,11 @@ export const reviewReducer = (state = {}, action) => {
         } catch (e) {
           throw new Error(e.message)
         }
+      }
+      case DELETE_REVIEW: {
+        const newReviews = { ...state }
+        delete newReviews[action.payload]
+        return newReviews
       }
       default:
         return state;

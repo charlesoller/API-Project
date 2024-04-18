@@ -1,14 +1,14 @@
 import styles from "./DeleteReviewModal.module.css"
 import { useModal } from "../../context/Modal";
 import { useDispatch } from "react-redux";
-import { deleteSpotThunk } from "../../store/spot";
+import { deleteReviewThunk } from "../../store/review";
 
 export default function DeleteReviewModal({ id }){
     const { closeModal } = useModal();
     const dispatch = useDispatch()
 
     const handleDelete = () => {
-        // dispatch(deleteSpotThunk(id))
+        dispatch(deleteReviewThunk(id))
         closeModal()
     }
 

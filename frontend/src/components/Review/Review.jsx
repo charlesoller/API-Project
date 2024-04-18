@@ -6,6 +6,7 @@ import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal"
 
 export default function Review({ review }){
     const { review: reviewText, createdAt } = review
+    console.log("THE REVIEW: ", review)
 
     const user = useSelector(state => state.session.user)
 
@@ -15,7 +16,7 @@ export default function Review({ review }){
             <p className={styles.date}>{formatDate(createdAt)}</p>
             <p className={styles.review}>{reviewText}</p>
             {
-                review.User.id === user.id && <OpenModalButton buttonText="Delete" className={styles.button} modalComponent={<DeleteReviewModal id={review.id} />}/>
+                review.User?.id === user?.id && <OpenModalButton buttonText="Delete" className={styles.button} modalComponent={<DeleteReviewModal id={review.id} />}/>
             }
         </article>
     )
