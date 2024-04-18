@@ -1,0 +1,44 @@
+.modal {
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+.header {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+.button {
+    background: #fd5c63;
+    color: white;
+    font-weight: 500;
+    width: 100%;
+    border-radius: 1em;
+    padding: 1em;
+    transition: all 0.1s ease-in-out;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
+}
+
+.button_no {
+    background: rgb(113 113 122);
+    color: white;
+    font-weight: 500;
+    width: 100%;
+    border-radius: 1em;
+    padding: 1em;
+    transition: all 0.1s ease-in-out;
+}
+
+.button_no:hover,
+.button_no:focus {
+    transform: scale(1.02)
+}
