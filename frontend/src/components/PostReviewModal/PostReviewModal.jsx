@@ -15,7 +15,7 @@ export default function PostReviewModal({ id }){
     const { closeModal } = useModal();
 
     const handleSubmit = (e) => {
-        // e.preventDefault()
+        e.preventDefault()
         dispatch(createReviewThunk({review, stars: userRating}, id))
             .then(closeModal)
             .catch(err => setErrors({ message: err.message }))

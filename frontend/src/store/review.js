@@ -35,6 +35,8 @@ export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
 export const createReviewThunk = (review, id) => async(dispatch) => {
   try {
     const res = await createReviewBasedOnSpotId(review, id)
+    console.log("THE RES: ", res)
+    res.spotId = Number(res.spotId)
     dispatch(loadReview(res))
   } catch (e) {
     throw new Error(e.message)
@@ -73,15 +75,6 @@ export const reviewReducer = (state = {}, action) => {
           throw new Error(e.message)
         }
       }
-    //   case RECEIVE_REPORT:
-    //     return { ...state, [action.report.id]: action.report };
-    //   case UPDATE_REPORT:
-    //     return { ...state, [action.report.id]: action.report };
-    //   case REMOVE_REPORT: {
-    //     const newState = { ...state };
-    //     delete newState[action.reportId];
-    //     return newState;
-    //   }
       default:
         return state;
     }
