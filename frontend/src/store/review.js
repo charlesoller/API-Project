@@ -36,7 +36,6 @@ export const createReviewThunk = (review, id) => async(dispatch) => {
   try {
     const res = await createReviewBasedOnSpotId(review, id)
     console.log("THE RES: ", res)
-    res.spotId = Number(res.spotId)
     dispatch(loadReview(res))
   } catch (e) {
     throw new Error(e.message)
