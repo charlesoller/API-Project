@@ -74,7 +74,7 @@ export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
 export const updateSpotThunk = (spot, id, navigate) => async(dispatch) => {
   const res = await updateSpot(spot, id)
   dispatch(loadSpotById(res))
-  navigate(`/spots/${res.id}`)
+  navigate(`/spots/${id}`)
 }
 
 export const deleteSpotThunk = (id) => async(dispatch) => {
