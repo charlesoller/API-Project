@@ -4,7 +4,6 @@ import { FaStar } from "react-icons/fa";
 
 export default function SpotCard({ spot }){
     const { previewImage, city, state, price, avgRating, id } = spot
-    console.log(previewImage)
     return (
         <Link to={`/spots/${id}`} state={ spot }>
             <article className={styles.container}>
