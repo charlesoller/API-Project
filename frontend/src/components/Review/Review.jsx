@@ -6,7 +6,6 @@ import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal"
 
 export default function Review({ review }){
     const { review: reviewText, createdAt } = review
-    console.log("THE REVIEW: ", review)
 
     const user = useSelector(state => state.session.user)
 

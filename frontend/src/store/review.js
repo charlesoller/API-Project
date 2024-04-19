@@ -44,7 +44,8 @@ export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
 export const createReviewThunk = (review, id) => async(dispatch) => {
   try {
     const res = await createReviewBasedOnSpotId(review, id)
-    dispatch(loadReview(res))
+    const newSpots = await getReviewsBySpotId(id)
+    dispatch(loadReviewsBySpotId(newSpots))
   } catch (e) {
     throw new Error(e.message)
   }
