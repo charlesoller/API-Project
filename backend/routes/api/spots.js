@@ -307,12 +307,16 @@ router.post("/", async(req, res) => {
     }
 
     try {
+        console.log("TEST")
+        console.log(id)
+        console.log(address, city, state, country, lat, lng, name, description, price)
         let spot = await Spot.create({ ownerId: id, address, city, state, country, lat, lng, name, description, price });
         spot.numReviews = undefined
         spot.avgRating = undefined   //These properties shouldn't show up in response
         spot = formatDate(spot)
         return res.json(spot)
     } catch(e) {
+        console.log(e)
         const err = { message: "Bad Request" }
         const errors = {}
         e.errors.forEach(error => {

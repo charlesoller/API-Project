@@ -4,7 +4,7 @@ import { useState } from 'react';
 import * as sessionActions from '../../store/session';
 import { useDispatch } from 'react-redux';
 import { useModal } from '../../context/Modal';
-import './LoginForm.css';
+import styles from "./LoginForm.module.css"
 
 function LoginFormModal() {
   const dispatch = useDispatch();
@@ -20,40 +20,56 @@ function LoginFormModal() {
       .then(closeModal)
       .catch(async (res) => {
         const data = await res.json();
-        if (data && data.errors) {
-          setErrors(data.errors);
+        if (data) {
+          setErrors({ credential: "The provided credentials were invalid." });
         }
       });
   };
 
+  const handleDemoLogin = (e) => {
+    e.preventDefault();
+    return dispatch(sessionActions.login({ credential: "demo@user.io", password: "password" }))
+      .then(closeModal)
+      .catch(async (res) => {
+        const data = await res.json();
+        if (data) {
+          setErrors({ credential: "Sorry, something went wrong. Please try again." });
+        }
+      });
+  }
+
   return (
-    <>
+    <div className={styles.main}>
       <h1>Log In</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
+      { errors.credential && (
+          <p className={styles.error}>{errors.credential}</p>
+      )}
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <label className={styles.input_group}>
           Username or Email
           <input
             type="text"
             value={credential}
             onChange={(e) => setCredential(e.target.value)}
             required
+            className={styles.input}
           />
         </label>
-        <label>
+        <label className={styles.input_group}>
           Password
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className={styles.input}
           />
         </label>
-        {errors.credential && (
-          <p>{errors.credential}</p>
-        )}
-        <button type="submit">Log In</button>
+        <button type="submit" className={styles.button} disabled={credential.length < 4 || password.length < 6}>Log In</button>
       </form>
-    </>
+
+      <button className={styles.demo} onClick={handleDemoLogin}>Demo User</button>
+    </div>
   );
 }
 

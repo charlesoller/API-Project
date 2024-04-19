@@ -1,0 +1,33 @@
+.card {
+    border: solid 1px lightgray;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    padding: 1.5em;
+    border-radius: 0.2em;
+}
+
+.name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.date {
+    color: rgb(148 163 184);
+    font-size: 0.85rem;
+    margin-bottom: 1em;
+}
+
+.button {
+    color: white;
+    font-size: 0.7rem;
+    border-radius: 0.5em;
+    background: #fd5c63;
+    padding: 0.8em 1.5em;
+    transition: all 0.1s ease-in-out;
+    width: fit-content;
+    margin-top: 1em;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
+}

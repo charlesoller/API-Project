@@ -64,7 +64,7 @@ export const logout = () => async (dispatch) => {
 
 const initialState = { user: null };
 
-const sessionReducer = (state = initialState, action) => {
+export const sessionReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER:
       return { ...state, user: action.payload };
@@ -75,4 +75,3 @@ const sessionReducer = (state = initialState, action) => {
   }
 };
 
-export default sessionReducer;

@@ -1,0 +1,28 @@
+.main {
+    padding: 3em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(10%, 1fr));
+    gap: 1em;
+}
+
+.button {
+    color: white;
+    font-size: 0.9rem;
+    border-radius: 0.5em;
+    background: #fd5c63;
+    padding: 0.8em 1.5em;
+    transition: all 0.1s ease-in-out;
+    width: fit-content;
+    margin-bottom: 2em;
+}
+
+.button:hover,
+.button:focus {
+    transform: scale(1.02)
+}
