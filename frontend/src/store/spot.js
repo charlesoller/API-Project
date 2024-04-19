@@ -64,7 +64,7 @@ export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
   const res = await createSpot(spot);
   console.log(res)
   // After creating the spot, we create the images for the spot
-  const images = await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
+  await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
 
   dispatch(loadSpotById(res))
   // The spot as well as the preview images url is passed along
@@ -78,7 +78,7 @@ export const updateSpotThunk = (spot, id, navigate) => async(dispatch) => {
 }
 
 export const deleteSpotThunk = (id) => async(dispatch) => {
-  const res = await deleteSpot(id)
+  await deleteSpot(id)
   dispatch(deleteSpotById(id))
 }
 

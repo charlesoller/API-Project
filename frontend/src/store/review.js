@@ -15,12 +15,12 @@ const loadReviewsBySpotId = (reviews) => {
     }
 }
 
-const loadReview = (review) => {
-  return {
-    type: LOAD_REVIEW,
-    payload: review
-  }
-}
+// const loadReview = (review) => {
+//   return {
+//     type: LOAD_REVIEW,
+//     payload: review
+//   }
+// }
 
 const deleteReviewById = (id) => {
   return {
@@ -43,7 +43,7 @@ export const fetchReviewsBySpotIdThunk = (id) => async (dispatch) => {
 
 export const createReviewThunk = (review, id) => async(dispatch) => {
   try {
-    const res = await createReviewBasedOnSpotId(review, id)
+    await createReviewBasedOnSpotId(review, id)
     const newSpots = await getReviewsBySpotId(id)
     dispatch(loadReviewsBySpotId(newSpots))
   } catch (e) {
@@ -52,7 +52,7 @@ export const createReviewThunk = (review, id) => async(dispatch) => {
 }
 
 export const deleteReviewThunk = (id) => async(dispatch) => {
-  const res = await deleteReview(id)
+  await deleteReview(id)
   dispatch(deleteReviewById(id))
 }
 
