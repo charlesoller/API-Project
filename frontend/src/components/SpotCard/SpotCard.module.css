@@ -8,6 +8,7 @@
     transition: all 0.1s ease-in-out;
     display: grid;
     grid-template-rows: 70% 30%;
+    overflow: hidden;
 }
 
 .container:hover,
