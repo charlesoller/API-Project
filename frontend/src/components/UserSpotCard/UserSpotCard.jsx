@@ -28,7 +28,6 @@ export default function UserSpotCard({ spot }){
                             Update
                         </Link>
                         <OpenModalButton className={styles.button} buttonText="Delete" modalComponent={<DeleteSpotModal id={id} />} />
-                        {/* <button className={styles.button}>Delete</button> */}
                     </div>
                 </div>
 
