@@ -69,6 +69,7 @@ export const updateSpot = async(spot, id) => {
 }
 
 export const createImageBasedOnSpotId = async(img, id) => {
+    console.log("IN CREATE IMAGE FUNCTION")
     try {
         const res = await csrfFetch(`/api/spots/${id}/images`, {
             method: "POST",
