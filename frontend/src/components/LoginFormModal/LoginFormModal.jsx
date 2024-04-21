@@ -17,13 +17,13 @@ function LoginFormModal() {
     e.preventDefault();
     setErrors({});
     return dispatch(sessionActions.login({ credential, password }))
-      .then(closeModal)
-      .catch(async (res) => {
-        const data = await res.json();
-        if (data) {
+      .then(res => {
+        if(!res.ok){
           setErrors({ credential: "The provided credentials were invalid." });
+        } else {
+          closeModal()
         }
-      });
+      })
   };
 
   const handleDemoLogin = (e) => {

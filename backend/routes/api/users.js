@@ -61,8 +61,8 @@ router.post('/', validateSignup, async (req, res) => {
         e.errors.forEach(error => {
           const errItem = error.path
           switch (errItem) {
-              case 'email': errors.stars = "User with that email already exists"; break;
-              case 'username': errors.city = "User with that username already exists"; break;
+              case 'email': errors.email = "User with that email already exists"; break;
+              case 'username': errors.username = "User with that username already exists"; break;
           }
         })
         err.errors = errors

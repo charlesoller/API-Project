@@ -50,8 +50,11 @@ export const signup = (user) => async (dispatch) => {
     })
   });
   const data = await response.json();
-  dispatch(setUser(data.user));
-  return response;
+  if(data.ok){
+    dispatch(setUser(data.user));
+  } else {
+    return data;
+  }
 };
 
 export const logout = () => async (dispatch) => {
@@ -74,4 +77,3 @@ export const sessionReducer = (state = initialState, action) => {
       return state;
   }
 };
-
