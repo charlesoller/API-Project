@@ -61,8 +61,8 @@ function ProfileButton({ user }) {
             <div className={styles.user_actions}>
               <Link to="/spots/current" className={styles.user_action}>Manage Spots</Link>
             </div>
-            <li className={styles.logout}>
-              <button onClick={logout}>Log Out</button>
+            <li className={styles.logout} onClick={logout}>
+              <button>Log Out</button>
             </li>
           </div>
         ) : (

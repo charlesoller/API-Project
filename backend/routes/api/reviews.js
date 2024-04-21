@@ -170,11 +170,12 @@ router.put("/:id", async(req, res) => {
                                                 DELETE ROUTES
 ============================================================================================================== */
 
-// Delete a Spot
+// Delete a Review
 router.delete("/:id", async (req, res) => {
     const { id } = req.params
     const userId = req.user?.id
     const review = await Review.findByPk(id)
+
     if(!userId){
         return res.status(401).json({ message: "Authentication required" })
     }
@@ -185,7 +186,15 @@ router.delete("/:id", async (req, res) => {
         return res.status(403).json({ message: "Forbidden" })
     }
 
+    const spot = await Spot.findByPk(review.spotId)
+    const newRating = ((spot.avgRating * spot.numReviews) - review.stars) / (spot.numReviews - 1)
 
+    // Updating spot to reflect new review
+    spot.set({
+        numReviews: spot.numReviews - 1,
+        avgRating: Number(newRating.toFixed(2))
+    })
+    await spot.save()
 
 
     await review.destroy()

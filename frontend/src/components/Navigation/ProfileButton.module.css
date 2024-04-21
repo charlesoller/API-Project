@@ -35,6 +35,10 @@
     width: 100%;
 }
 
+.name, .email {
+    margin-left: 1em;
+}
+
 .logout {
     cursor: pointer;
     margin-top: 0.5em;
