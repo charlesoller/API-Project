@@ -381,8 +381,8 @@ router.post("/:id/reviews", async(req, res) => {
 
     try {
         let newReview = await Review.create({ spotId, userId, review, stars })
-        const newRating = (spot.avgRating * spot.numReviews + stars) / (spot.numReviews + 1)
-
+        const newRating = ((spot.avgRating || 0 * spot.numReviews) + stars) / (spot.numReviews + 1)
+        
         // Updating spot to reflect new review
         spot.set({
             numReviews: spot.numReviews + 1,

@@ -26,6 +26,15 @@ export default function SpotDetail(){
         return reviews.every(review => review.userId !== user.id)
     }
 
+    const findAvgReviewRating = (reviews) => {
+        console.log(reviews)
+        let sum = 0;
+        reviews.forEach(review => sum += review.stars)
+        const avg = sum / reviews.length
+
+        return avg.toFixed(2)
+    }
+
     useEffect(() => {
         dispatch(fetchSpotDetailsThunk(id))
         try {
@@ -65,11 +74,11 @@ export default function SpotDetail(){
                         <p className={styles.description}>{spot.description}</p>
                     </div>
 
-                    <ReserveSpotCard price={spot.price} avgRating={spot.avgStarRating} numReviews={spot.numReviews}/>
+                    <ReserveSpotCard price={spot.price} avgRating={reviews.length ? findAvgReviewRating(reviews) : undefined} numReviews={reviews.length}/>
                 </section>
 
                 <section>
-                    <h3 className={styles.review_header}> <FaStar /> { spot.numReviews ? spot.avgStarRating + " • " + spot.numReviews + ( spot.numReviews === 1 ? " Review" : " Reviews" ) : "New" }</h3>
+                    <h3 className={styles.review_header}> <FaStar /> { reviews.length ? findAvgReviewRating(reviews) + " • " + reviews.length + ( reviews.length === 1 ? " Review" : " Reviews" ) : "New" }</h3>
                     {user && spot.Owner.id !== user.id && hasNotReviewed() && <OpenModalButton className={styles.post_review_button} modalComponent={<PostReviewModal id={id} />} buttonText="Post Your Review" />}
                     <div className={styles.review_elements}>
                         { reviewElements.length ?
