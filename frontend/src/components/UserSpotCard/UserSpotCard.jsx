@@ -8,7 +8,7 @@ export default function UserSpotCard({ spot }){
     const { previewImage, city, state, price, avgRating, id } = spot
     return (
         <Link to={`/spots/${id}`} state={ spot }>
-            <article className={styles.container}>
+            <article className={styles.container} title={spot.name}>
                 <div className={styles.image_container}>
                     <img src={ previewImage } alt="Preview Image of a Spot to rent." className={styles.image} />
                 </div>
@@ -20,7 +20,7 @@ export default function UserSpotCard({ spot }){
                         </div>
                         <div className={styles.rating}>
                             <FaStar />
-                            <p>{ avgRating ? avgRating : "New" }</p>
+                            <p>{ avgRating ? avgRating.toFixed(2) : "New" }</p>
                         </div>
                     </div>
                     <div className={styles.user_options}>
