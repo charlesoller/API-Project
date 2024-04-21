@@ -21,8 +21,8 @@ module.exports = {
         name: "Candy Castle",
         description: "The Sweetest Place on Earth",
         price: 401.89,
-        numReviews: 2,
-        avgRating: 4.6
+        numReviews: 1,
+        avgRating: 4.0
       },
       {
         ownerId: 3,
@@ -35,8 +35,8 @@ module.exports = {
         name: "Haunted House",
         description: "The Most Haunted Place on Earth",
         price: 10.00,
-        numReviews: 5,
-        avgRating: 2.2
+        numReviews: 2,
+        avgRating: 2.5
       },
       {
         ownerId: 2,
@@ -49,8 +49,8 @@ module.exports = {
         name: "Average Home",
         description: "The Most Average Place on Earth",
         price: 100.50,
-        numReviews: 3,
-        avgRating: 4.1
+        numReviews: 0,
+        avgRating: null
       },
     ], { validate: true });
   },
