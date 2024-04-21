@@ -24,6 +24,12 @@
 .text {
     color: #fd5c63;
     font-size: 1.5rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.text:hover,
+.text:focus {
+    letter-spacing: 0.15rem;
 }
 
 .right {

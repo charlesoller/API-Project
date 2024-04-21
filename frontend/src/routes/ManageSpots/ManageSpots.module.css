@@ -26,3 +26,15 @@
 .button:focus {
     transform: scale(1.02)
 }
+
+.link {
+    text-decoration: underline;
+    transition: all 0.2s ease-in-out;
+    width: fit-content;
+}
+
+.link:hover,
+.link:focus {
+    color: blue;
+    font-weight: 500;
+}
