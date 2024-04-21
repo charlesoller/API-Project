@@ -50,8 +50,9 @@ export const signup = (user) => async (dispatch) => {
     })
   });
   const data = await response.json();
-  if(data.ok){
+  if(response.ok){
     dispatch(setUser(data.user));
+    return { message: "Success!" }
   } else {
     return data;
   }

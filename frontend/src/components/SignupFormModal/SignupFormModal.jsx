@@ -39,6 +39,7 @@ function SignupFormModal() {
         password
       }))
       .then(res => {
+        console.log(res)
         if(res.errors){
           if(res.errors.email){
             newErrors.email = res.errors.email

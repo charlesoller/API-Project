@@ -62,7 +62,7 @@ export const fetchCurrentUserSpotsThunk = () => async (dispatch) => {
 export const createSpotThunk = (spot, imgs, navigate) => async(dispatch) => {
   // console.log("IN THUNK")
   const res = await createSpot(spot);
-  console.log("RES: ", res)
+  // console.log("RES: ", res)
   // After creating the spot, we create the images for the spot
   const images = await Promise.all(imgs.map(async (img) => await createImageBasedOnSpotId(img, res.id)))
   console.log("IMAGES: ", images)
